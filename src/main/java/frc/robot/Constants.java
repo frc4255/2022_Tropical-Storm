@@ -16,7 +16,7 @@ import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
  */
 public final class Constants {
 
-    public final class Drivetrain{
+    public static final class Drivetrain{
 
         public static final int leftMotor0 = 0;
         public static final int leftMotor1 = 1;
@@ -30,10 +30,23 @@ public final class Constants {
 
     }
 
-    public static class Shooter{
+    public static final class Shooter{
 
-        public static final int leftMotor = 0;
-        public static final int rightMotor = 1;
+        public static final int leftMotor = 6;
+        public static final int rightMotor = 7;
+
+    }
+
+    public static final class Hopper{
+
+        public static final int leftMotor = 8;
+        public static final int rightMotor = 9;
+
+    }
+
+    public static final class Conveyor{
+
+        public static final int motor = 10;
 
     }
 

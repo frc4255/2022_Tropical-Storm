@@ -1,6 +1,5 @@
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.kauailabs.navx.frc.AHRS;
 
@@ -53,10 +52,6 @@ public class Drivetrain extends SubsystemBase {
    * Creates a new DriveSubsystem.
    */
   public Drivetrain() {
-
-    // Reverse the directions of the middle motors for each gearbox
-    left1.setInverted(InvertType.InvertMotorOutput);
-    right1.setInverted(InvertType.InvertMotorOutput);
 
     // Sets the distance per pulse for the encoders
     m_leftEncoder.setDistancePerPulse(DTProperties.kEncoderDistancePerPulse);
