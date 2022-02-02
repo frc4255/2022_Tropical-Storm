@@ -1,43 +1,43 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.kauailabs.navx.frc.AHRS;
 
-import edu.wpi.first.wpilibj.SpeedControllerGroup;
+import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.geometry.Pose2d;
-import edu.wpi.first.wpilibj.geometry.Translation2d;
-import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
-import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
+import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Shuphlebord;
-import frc.robot.TabData;
 import frc.robot.Constants.DTProperties;
-import frc.robot.Constants.DrivetrainConstants;
+import frc.robot.Constants;
 import frc.robot.wrappers.TalonFXEncoder;
-import frc.robot.Goals;
 
 public class Drivetrain extends SubsystemBase {
   // The motors on the left side of the drive.
 
-  WPI_TalonFX topLeft = new WPI_TalonFX(DrivetrainConstants.topLeftMotor);
-  WPI_TalonFX bottomLeft = new WPI_TalonFX(DrivetrainConstants.bottomLeftMotor);
+  WPI_TalonFX left0 = new WPI_TalonFX(Constants.Drivetrain.leftMotor0);
+  WPI_TalonFX left1 = new WPI_TalonFX(Constants.Drivetrain.leftMotor1);
+  WPI_TalonFX left2 = new WPI_TalonFX(Constants.Drivetrain.leftMotor2);
 
-  private final SpeedControllerGroup m_leftMotors = new SpeedControllerGroup(topLeft, bottomLeft);
+  private final MotorControllerGroup m_leftMotors = new MotorControllerGroup(left0, left1, left2);
 
   // The motors on the right side of the drive.
 
-  WPI_TalonFX topRight = new WPI_TalonFX(DrivetrainConstants.topRightMotor);
-  WPI_TalonFX bottomRight = new WPI_TalonFX(DrivetrainConstants.bottomRightMotor);
+  WPI_TalonFX right0 = new WPI_TalonFX(Constants.Drivetrain.rightMotor0);
+  WPI_TalonFX right1 = new WPI_TalonFX(Constants.Drivetrain.rightMotor1);
+  WPI_TalonFX right2 = new WPI_TalonFX(Constants.Drivetrain.rightMotor2);
 
-  private final SpeedControllerGroup m_rightMotors = new SpeedControllerGroup(topRight, bottomRight);
+  private final MotorControllerGroup m_rightMotors = new MotorControllerGroup(right0, right1, right2);
 
   // The robot's drive
   private final DifferentialDrive m_drive = new DifferentialDrive(m_leftMotors, m_rightMotors);
 
   // The encoders
-  public TalonFXEncoder m_leftEncoder = new TalonFXEncoder(topLeft, bottomLeft);
-  public TalonFXEncoder m_rightEncoder = new TalonFXEncoder(topRight, bottomRight);
+  public TalonFXEncoder m_leftEncoder = new TalonFXEncoder(left0, left1, left2);
+  public TalonFXEncoder m_rightEncoder = new TalonFXEncoder(right0, right1, right2);
 
   // The gyro sensor
   public final AHRS m_gyro = new AHRS();
@@ -53,6 +53,11 @@ public class Drivetrain extends SubsystemBase {
    * Creates a new DriveSubsystem.
    */
   public Drivetrain() {
+
+    // Reverse the directions of the middle motors for each gearbox
+    left1.setInverted(InvertType.InvertMotorOutput);
+    right1.setInverted(InvertType.InvertMotorOutput);
+
     // Sets the distance per pulse for the encoders
     m_leftEncoder.setDistancePerPulse(DTProperties.kEncoderDistancePerPulse);
     m_rightEncoder.setDistancePerPulse(DTProperties.kEncoderDistancePerPulse);
@@ -83,23 +88,6 @@ public class Drivetrain extends SubsystemBase {
    */
   public Pose2d getPose() {
     return m_odometry.getPoseMeters();
-  }
-
-  /**
-   * 
-   * @return The distance between the goal and the robot.
-   */
-  public double getDistance(){
-    Translation2d goalPos = Goals.getGoalPosition();
-
-    Pose2d pose = getPose();
-
-    double deltaX = Math.abs(pose.getX() - goalPos.getX());
-    double deltaY = Math.abs(pose.getY() - goalPos.getY());
-
-    double distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-
-    return distance;
   }
 
   /**
@@ -227,28 +215,4 @@ public class Drivetrain extends SubsystemBase {
     return m_gyro.getRate();
   }
 
-  /**
-   * Returns the current draws of each drivetrain motor
-   * 
-   * @return An double array containing the supply amperage for each motor
-   */
-  public double[] getCurrentDraw(){
-
-    TabData data = Shuphlebord.powerData;
-
-    double tl = topLeft.getSupplyCurrent();
-    double tr = topRight.getSupplyCurrent();
-    double bl = bottomLeft.getSupplyCurrent();
-    double br = bottomRight.getSupplyCurrent();
-
-    data.updateEntry("Drivetrain TL", tl);
-    data.updateEntry("Drivetrian TR", tr);
-    data.updateEntry("Drivetrain BL", bl);
-    data.updateEntry("Drivetrian BR", br);
-
-    double[] powers = {tl, tr, bl, br};
-
-    return powers;
-
-  }
 }

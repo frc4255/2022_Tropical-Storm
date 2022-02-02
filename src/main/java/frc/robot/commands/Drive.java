@@ -4,7 +4,6 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 import frc.robot.Shuphlebord;
@@ -45,8 +44,8 @@ public class Drive extends CommandBase {
     drivetrainData.updateEntry("Pose A", drivetrain.getPose().getRotation().getDegrees());
 
 
-    double throttle = 0.55 * RobotContainer.driveController.getY(Hand.kLeft);
-    double turn = -0.55 * RobotContainer.driveController.getX(Hand.kRight);
+    double throttle = 0.55 * RobotContainer.controller.getLeftY();
+    double turn = -0.55 * RobotContainer.controller.getRightX();
 
     drivetrain.curvatureDrive(throttle, turn); 
   }
