@@ -1,0 +1,11 @@
+{
+  "SysId": {
+    "Analysis Type": "Drivetrain",
+    "AnalyzerJSONLocation": "C:\\Users\\Robodores\\FRC\\Blunderbuss\\src\\main\\char-configs\\sysid_data20220205-140510.json",
+    "NetworkTables Settings": {
+      "serverTeam": "4255"
+    },
+    "mode": "Client",
+    "serverTeam": "4255"
+  }
+}

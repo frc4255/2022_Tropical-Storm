@@ -44,8 +44,10 @@ public class Drive extends CommandBase {
     drivetrainData.updateEntry("Pose A", drivetrain.getPose().getRotation().getDegrees());
 
 
-    double throttle = 0.55 * RobotContainer.controller.getLeftY();
-    double turn = -0.55 * RobotContainer.controller.getRightX();
+    double throttle = -0.25 * RobotContainer.controller.getLeftY();
+    double turn = 0.25 * RobotContainer.controller.getRightX();
+
+    // System.out.println("Left Y: " + throttle + ", Right X: " + turn);
 
     drivetrain.curvatureDrive(throttle, turn); 
   }

@@ -25,7 +25,7 @@ public final class Constants {
         public static final int rightMotor1 = 4;
         public static final int rightMotor2 = 5;
 
-        public static final double gearRatio = 60.0 / 8.0;
+        public static final double gearRatio = 9.0 / 64.0;
         public static final double wheelCircumference = Math.PI * 4;
 
     }
@@ -50,6 +50,12 @@ public final class Constants {
 
     }
 
+    public static final class Intake{
+
+        public static final int motor = 11;
+
+    }
+
     public static final class DTProperties{
 
         // These are example values only - DO NOT USE THESE FOR YOUR OWN ROBOT!
@@ -57,18 +63,29 @@ public final class Constants {
         // for *your* robot's drive.
         // The Robot Characterization Toolsuite provides a convenient tool for obtaining these
         // values for your robot.
-        public static final double ksVolts = 0.769;
-        public static final double kvVoltSecondsPerMeter = 2.52;
-        public static final double kaVoltSecondsSquaredPerMeter = 0.221;
+        public static final double ksVolts = 0.63879;
+        public static final double kvVoltSecondsPerMeter = 2.3536;
+        public static final double kaVoltSecondsSquaredPerMeter = 0.15842;
 
         // Example value only - as above, this must be tuned for your drive!
-        public static final double kPDriveVel = 2.16;
+        public static final double kPDriveVel = 2.5803;
 
-        public static final double kTrackwidthMeters = 0.661234;
+        public static final double kTrackwidthMeters = 0.64135;
         public static final DifferentialDriveKinematics kDriveKinematics = new DifferentialDriveKinematics(kTrackwidthMeters);
 
         private static final double inchesToMeters = 0.0254;
-        public static final double kEncoderDistancePerPulse = inchesToMeters * Drivetrain.wheelCircumference * THROUGH_BORE_ENCODER_REVS_PER_TICK / Drivetrain.gearRatio;
+        public static final double kEncoderDistancePerPulse = inchesToMeters * Drivetrain.wheelCircumference * THROUGH_BORE_ENCODER_REVS_PER_TICK * Drivetrain.gearRatio;
+
+    }
+
+    public final class AutoConstants{
+
+        public static final double kMaxSpeedMetersPerSecond = 0.5;//3.048;
+        public static final double kMaxAccelerationMetersPerSecondSquared = 0.5;//3.0;
+
+        // Reasonable baseline values for a RAMSETE follower in units of meters and seconds
+        public static final double kRamseteB = 2.0;
+        public static final double kRamseteZeta = 0.7;
 
     }
 

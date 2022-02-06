@@ -4,7 +4,15 @@
 
 package frc.robot;
 
+import java.io.IOException;
+import java.nio.file.Path;
+
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryUtil;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
@@ -19,6 +27,11 @@ public class Robot extends TimedRobot {
 
   private RobotContainer m_robotContainer;
 
+  // PATHS FOR AUTO
+  static String shortyDir = "output/shorty.wpilib.json";
+
+  public static Trajectory shortyTrajectory = new Trajectory();
+
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -27,7 +40,10 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
+    shortyTrajectory = loadTrajectories(shortyDir);
+
     m_robotContainer = new RobotContainer();
+    LiveWindow.disableAllTelemetry();
   }
 
   /**
@@ -92,4 +108,23 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during test mode. */
   @Override
   public void testPeriodic() {}
+
+
+  /**
+   * Method attempts to load a Trajectory from a path, will print the stack trace if failed.
+   * @param path A string containing the path to the trajectory
+   * @return A Trajectory
+   */
+  private Trajectory loadTrajectories(String path){
+    Trajectory trajectory = new Trajectory();
+
+    try {
+      Path pathObj = Filesystem.getDeployDirectory().toPath().resolve(path);
+      trajectory = TrajectoryUtil.fromPathweaverJson(pathObj);
+    } catch (IOException ex) {
+      DriverStation.reportError("Unable to open trajectory: " + path, ex.getStackTrace());
+    }
+
+    return trajectory;
+  }
 }
