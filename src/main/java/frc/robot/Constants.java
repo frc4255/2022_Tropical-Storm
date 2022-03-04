@@ -54,6 +54,8 @@ public final class Constants {
 
         public static final int motor = 11;
 
+        public static final int arm = 0;
+
     }
 
     public static final class DTProperties{
@@ -80,8 +82,8 @@ public final class Constants {
 
     public final class AutoConstants{
 
-        public static final double kMaxSpeedMetersPerSecond = 0.5;//3.048;
-        public static final double kMaxAccelerationMetersPerSecondSquared = 0.5;//3.0;
+        public static final double kMaxSpeedMetersPerSecond = 0.01;//3.048;
+        public static final double kMaxAccelerationMetersPerSecondSquared = 0.005;//3.0;
 
         // Reasonable baseline values for a RAMSETE follower in units of meters and seconds
         public static final double kRamseteB = 2.0;

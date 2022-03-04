@@ -5,10 +5,11 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.RobotContainer;
 import frc.robot.Shuphlebord;
 import frc.robot.TabData;
+import frc.robot.subsystems.Conveyor;
 import frc.robot.subsystems.Shooter;
 
 public class Shoot extends CommandBase {
@@ -21,10 +22,12 @@ public class Shoot extends CommandBase {
   double kp = 0.0;
   double ki = 0.00025;
   double kd = 0.0;
-  double setpoint = 3560.0;
+  double setpoint = 2000.0;
   double power = 0.0;
   double tolerance = 100.0;
   PIDController controller = new PIDController(kp, ki, kd);
+
+  Timer toleranceTimer = new Timer();
 
   boolean lastPressed = false;
 
@@ -63,11 +66,7 @@ public class Shoot extends CommandBase {
       setpoint = adjustedSetpoint;
     }
 
-    if(RobotContainer.controller.getLeftBumper()){
-
-      if(!lastPressed){
-        lastPressed = true;
-      }
+    if(Shooter.State == Shooter.STATES.SHOOT) {
 
       controller.setSetpoint(setpoint);
 
@@ -79,12 +78,35 @@ public class Shoot extends CommandBase {
 
       shooter.set(power);
 
-    } else{
+
+
+      if(Math.abs(shooter.getRPM() - setpoint) <= tolerance && toleranceTimer.get() > 2.0){
+
+        Conveyor.State = Conveyor.STATES.LIFT;
+
+      } else if(Math.abs(shooter.getRPM() - setpoint) <= tolerance){
+        
+        toleranceTimer.start();
+
+      } else{
+
+        toleranceTimer.reset();
+
+      }
+
+      lastPressed = true;
+
+    } else if (Shooter.State == Shooter.STATES.STOP){
+
+      if(lastPressed){
+
+        Conveyor.State = Conveyor.STATES.STOP;
+
+      }
+
+      shooter.stop();
 
       lastPressed = false;
-      shooter.stop();
-      System.out.println("Stopped!");
-
     }
   }
 

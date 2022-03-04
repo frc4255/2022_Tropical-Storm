@@ -5,18 +5,18 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Conveyor;
 
-public class Suck extends CommandBase {
-  /** Creates a new Suck. */
+public class Lift extends CommandBase {
   @SuppressWarnings({ "PMD.UnusedPrivateField", "PMD.SingularField" })
 
-  Intake intake;
+  Conveyor conveyor;
 
-  public Suck(Intake m_intake) {
-    addRequirements(m_intake);
+  /** Creates a new Lift. */
+  public Lift(Conveyor m_conveyor) {
+    addRequirements(m_conveyor);
 
-    this.intake = m_intake;
+    this.conveyor = m_conveyor;
   }
 
   // Called when the command is initially scheduled.
@@ -26,20 +26,18 @@ public class Suck extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (Intake.State == Intake.STATES.STOP) {
 
-      this.intake.stop();
-      this.intake.setArm(this.intake.in);
+    if (Conveyor.State == Conveyor.STATES.STOP) {
 
-    } else if (Intake.State == Intake.STATES.INTAKE) {
+      this.conveyor.stop();
 
-      this.intake.set(this.intake.intakeSpeed);
-      this.intake.setArm(this.intake.out);
+    } else if (Conveyor.State == Conveyor.STATES.LIFT) {
 
-    } else if (Intake.State == Intake.STATES.EXPEL) {
+      this.conveyor.set(this.conveyor.liftSpeed);
 
-      this.intake.set(this.intake.expelSpeed);
-      this.intake.setArm(this.intake.out);
+    } else if (Conveyor.State == Conveyor.STATES.LOWER) {
+
+      this.conveyor.set(this.conveyor.lowerSpeed);
 
     }
   }

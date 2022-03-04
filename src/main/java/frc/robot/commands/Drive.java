@@ -44,8 +44,21 @@ public class Drive extends CommandBase {
     drivetrainData.updateEntry("Pose A", drivetrain.getPose().getRotation().getDegrees());
 
 
-    double throttle = -0.25 * RobotContainer.controller.getLeftY();
-    double turn = 0.25 * RobotContainer.controller.getRightX();
+    double controllerY = -RobotContainer.driveController.getLeftY();
+    double controllerX = RobotContainer.driveController.getRightX();
+    double exponent = 3.0;
+    double dirY = 1.0;
+    double dirX = 1.0;
+
+    double powerMod = 0.5;
+
+    if(exponent % 2.0 == 1.0){
+      dirY = Math.signum(controllerY);
+      dirX = Math.signum(controllerX);
+    }
+
+    double throttle = powerMod * Math.signum(controllerY) * Math.pow(dirY * controllerY, 3.0);
+    double turn = powerMod * Math.signum(controllerX) * Math.pow(dirX * controllerX, 3.0);
 
     // System.out.println("Left Y: " + throttle + ", Right X: " + turn);
 

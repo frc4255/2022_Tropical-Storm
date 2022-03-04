@@ -14,11 +14,15 @@ import edu.wpi.first.wpilibj.XboxController.Button;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DTProperties;
 import frc.robot.commands.Drive;
+import frc.robot.commands.Funnel;
+import frc.robot.commands.Lift;
 import frc.robot.commands.Shoot;
 import frc.robot.commands.Suck;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Hopper;
+import frc.robot.subsystems.Conveyor;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -34,13 +38,21 @@ public class RobotContainer {
   private final Shooter m_shooter = new Shooter();
   private final Drivetrain m_drivetrain = new Drivetrain();
   private final Intake m_intake = new Intake();
+  private final Hopper m_hopper = new Hopper();
+  private final Conveyor m_conveyor = new Conveyor();
 
   // Controllers
-  public static final XboxController controller = new XboxController(0);
+  public static final XboxController driveController = new XboxController(0);
+  public static final XboxController mechController = new XboxController(1);
 
   // Buttons
-  public final JoystickButton shootButton = new JoystickButton(controller, Button.kRightBumper.value);
-  public final JoystickButton intakeButton = new JoystickButton(controller, Button.kLeftBumper.value);
+  public final JoystickButton shootButton = new JoystickButton(driveController, Button.kRightBumper.value);
+  public final JoystickButton intakeButton = new JoystickButton(driveController, Button.kLeftBumper.value);
+  public final JoystickButton expelButton = new JoystickButton(driveController, Button.kB.value);
+
+  public final JoystickButton hopperIntakeButton = new JoystickButton(mechController, Button.kX.value);
+  public final JoystickButton liftButton = new JoystickButton(mechController, Button.kY.value);
+  public final JoystickButton lowerButton = new JoystickButton(mechController, Button.kA.value);
 
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -49,8 +61,11 @@ public class RobotContainer {
     configureButtonBindings();
 
     // Configure default commands
-    m_shooter.setDefaultCommand(new Shoot(m_shooter));
     m_drivetrain.setDefaultCommand(new Drive(m_drivetrain));
+    m_conveyor.setDefaultCommand(new Lift(m_conveyor));
+    m_hopper.setDefaultCommand(new Funnel(m_hopper));
+    m_intake.setDefaultCommand(new Suck(m_intake));
+    m_shooter.setDefaultCommand(new Shoot(m_shooter));
   }
 
   /**
@@ -61,7 +76,23 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
 
-    intakeButton.whileHeld(new Suck(m_intake));
+    intakeButton.whileHeld(() -> Intake.State = Intake.STATES.INTAKE).whileHeld(() -> Hopper.State = Hopper.STATES.FUNNEL);
+    intakeButton.whenReleased(() -> Intake.State = Intake.STATES.STOP).whenReleased(() -> Hopper.State = Hopper.STATES.STOP);
+
+    expelButton.whileHeld(() -> Intake.State = Intake.STATES.EXPEL).whileHeld(() -> Hopper.State = Hopper.STATES.EXPEL);
+    expelButton.whenReleased(() -> Intake.State = Intake.STATES.STOP).whenReleased(() -> Hopper.State = Hopper.STATES.STOP);
+
+    shootButton.whileHeld(() -> Shooter.State = Shooter.STATES.SHOOT);
+    shootButton.whenReleased(() -> Shooter.State = Shooter.STATES.STOP);
+
+    hopperIntakeButton.whileHeld(() -> Hopper.State = Hopper.STATES.FUNNEL);
+    hopperIntakeButton.whenReleased(() -> Hopper.State = Hopper.STATES.STOP);
+
+    liftButton.whileHeld(() -> Conveyor.State = Conveyor.STATES.LIFT);
+    liftButton.whenReleased(() -> Conveyor.State = Conveyor.STATES.STOP);
+
+    lowerButton.whileHeld(() -> Conveyor.State = Conveyor.STATES.LOWER);
+    lowerButton.whenReleased(() -> Conveyor.State = Conveyor.STATES.STOP);
 
   }
 

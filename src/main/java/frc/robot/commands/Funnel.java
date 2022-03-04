@@ -5,18 +5,18 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Hopper;
 
-public class Suck extends CommandBase {
-  /** Creates a new Suck. */
+public class Funnel extends CommandBase {
   @SuppressWarnings({ "PMD.UnusedPrivateField", "PMD.SingularField" })
 
-  Intake intake;
+  Hopper hopper;
 
-  public Suck(Intake m_intake) {
-    addRequirements(m_intake);
+  /** Creates a new Funnel. */
+  public Funnel(Hopper m_hopper) {
+    addRequirements(m_hopper);
 
-    this.intake = m_intake;
+    this.hopper = m_hopper;
   }
 
   // Called when the command is initially scheduled.
@@ -26,20 +26,18 @@ public class Suck extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (Intake.State == Intake.STATES.STOP) {
 
-      this.intake.stop();
-      this.intake.setArm(this.intake.in);
+    if (Hopper.State == Hopper.STATES.STOP) {
 
-    } else if (Intake.State == Intake.STATES.INTAKE) {
+      this.hopper.stop();
 
-      this.intake.set(this.intake.intakeSpeed);
-      this.intake.setArm(this.intake.out);
+    } else if (Hopper.State == Hopper.STATES.FUNNEL) {
 
-    } else if (Intake.State == Intake.STATES.EXPEL) {
+      this.hopper.set(this.hopper.funnelSpeed);
 
-      this.intake.set(this.intake.expelSpeed);
-      this.intake.setArm(this.intake.out);
+    } else if (Hopper.State == Hopper.STATES.EXPEL) {
+
+      this.hopper.set(this.hopper.expelSpeed);
 
     }
   }

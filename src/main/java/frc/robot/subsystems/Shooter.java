@@ -14,6 +14,10 @@ import frc.robot.wrappers.TalonFXEncoder;
 public class Shooter extends SubsystemBase {
   /** Creates a new Shooter. */
 
+  public static enum STATES {SHOOT, STOP};
+
+  public static STATES State = STATES.STOP;
+
   WPI_TalonFX leftMotor;
   WPI_TalonFX rightMotor;
 

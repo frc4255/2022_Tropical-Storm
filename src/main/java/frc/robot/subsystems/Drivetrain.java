@@ -124,11 +124,14 @@ public class Drivetrain extends SubsystemBase {
    */
   public void curvatureDrive(double throttle, double turn){
 
+    /*
     if(Math.abs(throttle) <= 0.1){
       m_drive.curvatureDrive(throttle, turn , true);
     } else{
       m_drive.curvatureDrive(throttle, turn, false);
-    }
+    }*/
+
+    m_drive.curvatureDrive(throttle, turn, false);
   }
 
   /**
