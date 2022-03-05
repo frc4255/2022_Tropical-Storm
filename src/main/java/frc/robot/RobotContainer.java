@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DTProperties;
+import frc.robot.commands.Climb;
 import frc.robot.commands.Drive;
 import frc.robot.commands.Funnel;
 import frc.robot.commands.Lift;
@@ -22,6 +23,7 @@ import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Hopper;
+import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Conveyor;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
@@ -40,6 +42,7 @@ public class RobotContainer {
   private final Intake m_intake = new Intake();
   private final Hopper m_hopper = new Hopper();
   private final Conveyor m_conveyor = new Conveyor();
+  private final Climber m_climber = new Climber();
 
   // Controllers
   public static final XboxController driveController = new XboxController(0);
@@ -53,6 +56,8 @@ public class RobotContainer {
   public final JoystickButton hopperIntakeButton = new JoystickButton(mechController, Button.kX.value);
   public final JoystickButton liftButton = new JoystickButton(mechController, Button.kY.value);
   public final JoystickButton lowerButton = new JoystickButton(mechController, Button.kA.value);
+  public final JoystickButton armUpButton = new JoystickButton(mechController, Button.kRightBumper.value);
+  public final JoystickButton armDownButton = new JoystickButton(mechController, Button.kLeftBumper.value);
 
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -66,6 +71,7 @@ public class RobotContainer {
     m_hopper.setDefaultCommand(new Funnel(m_hopper));
     m_intake.setDefaultCommand(new Suck(m_intake));
     m_shooter.setDefaultCommand(new Shoot(m_shooter));
+    m_climber.setDefaultCommand(new Climb(m_climber));
   }
 
   /**
@@ -94,6 +100,11 @@ public class RobotContainer {
     lowerButton.whileHeld(() -> Conveyor.State = Conveyor.STATES.LOWER);
     lowerButton.whenReleased(() -> Conveyor.State = Conveyor.STATES.STOP);
 
+    armUpButton.whileHeld(() -> Climber.State = Climber.STATES.ARMUP);
+    armUpButton.whenReleased(() -> Climber.State = Climber.STATES.STOP);
+
+    armDownButton.whileHeld(() -> Climber.State = Climber.STATES.ARMDOWN);
+    armDownButton.whenReleased(() -> Climber.State = Climber.STATES.STOP);
   }
 
   private RamseteCommand getRamseteCommand(Trajectory trajectory){

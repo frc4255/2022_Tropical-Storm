@@ -58,6 +58,12 @@ public final class Constants {
 
     }
 
+    public static final class Climber {
+        
+        public static final int motor = 12;
+
+    }
+
     public static final class DTProperties{
 
         // These are example values only - DO NOT USE THESE FOR YOUR OWN ROBOT!
