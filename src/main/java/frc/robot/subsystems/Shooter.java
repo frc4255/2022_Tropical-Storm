@@ -50,6 +50,13 @@ public class Shooter extends SubsystemBase {
     leftMotor.set(speed);
   }
 
+  public void setVoltage(double voltage){
+
+    leftMotor.setVoltage(voltage);
+    rightMotor.setVoltage(voltage);
+
+  }
+
   public void stop(){
     set(0.0);
   }

@@ -5,6 +5,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Shuphlebord;
@@ -19,13 +20,19 @@ public class Shoot extends CommandBase {
   Shooter shooter;
   TabData shooterData = Shuphlebord.shooterData;
 
-  double kp = 0.0;
-  double ki = 0.00025;
+  
+  double kp = 0.00014;
+  double ki = 0.0;
   double kd = 0.0;
-  double setpoint = 2000.0;
+  double setpoint = 1750.0;
   double power = 0.0;
-  double tolerance = 100.0;
+  double tolerance = 50.0;
   PIDController controller = new PIDController(kp, ki, kd);
+
+  double ks = 0.89497;
+  double kv = 0.12483;
+  double ka = 0.0094741;
+  SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(ks, kv, ka);
 
   Timer toleranceTimer = new Timer();
 
@@ -51,7 +58,7 @@ public class Shoot extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-
+    
     double adjustedkp = shooterData.getEntryData("kP").getDouble();
     double adjustedki = shooterData.getEntryData("kI").getDouble();
     double adjustedkd = shooterData.getEntryData("kD").getDouble();
@@ -68,19 +75,20 @@ public class Shoot extends CommandBase {
 
     if(Shooter.State == Shooter.STATES.SHOOT) {
 
-      controller.setSetpoint(setpoint);
+      double velocity = setpoint;
+      velocity /= 60.0; //In rotations per second
+
+      controller.setSetpoint(velocity);
 
       double rpm = shooter.getRPM();
-      double power = controller.calculate(rpm);
+      double power = feedforward.calculate(velocity) + controller.calculate(velocity);
       shooterData.updateEntry("RPM", rpm);
       shooterData.updateEntry("Setpoint", setpoint);
       shooterData.updateEntry("Power", power);
 
-      shooter.set(power);
+      shooter.setVoltage(power);
 
-
-
-      if(Math.abs(shooter.getRPM() - setpoint) <= tolerance && toleranceTimer.get() > 2.0){
+      if(Math.abs(shooter.getRPM() - setpoint) <= tolerance && toleranceTimer.get() > 1.0){
 
         Conveyor.State = Conveyor.STATES.LIFT;
 
@@ -91,7 +99,7 @@ public class Shoot extends CommandBase {
       } else{
 
         toleranceTimer.reset();
-
+        
       }
 
       lastPressed = true;
@@ -104,7 +112,7 @@ public class Shoot extends CommandBase {
 
       }
 
-      shooter.stop();
+      shooter.setVoltage(0.0);
 
       lastPressed = false;
     }

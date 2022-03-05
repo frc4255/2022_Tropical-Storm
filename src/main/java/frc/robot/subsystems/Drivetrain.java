@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.kauailabs.navx.frc.AHRS;
 
@@ -52,6 +53,15 @@ public class Drivetrain extends SubsystemBase {
    * Creates a new DriveSubsystem.
    */
   public Drivetrain() {
+
+    // Set break modes
+    left0.setNeutralMode(NeutralMode.Coast);
+    left1.setNeutralMode(NeutralMode.Coast);
+    left2.setNeutralMode(NeutralMode.Coast);
+
+    right0.setNeutralMode(NeutralMode.Coast);
+    right1.setNeutralMode(NeutralMode.Coast);
+    right2.setNeutralMode(NeutralMode.Coast);
 
     // Sets the distance per pulse for the encoders
     m_leftEncoder.setDistancePerPulse(DTProperties.kEncoderDistancePerPulse);
@@ -124,14 +134,12 @@ public class Drivetrain extends SubsystemBase {
    */
   public void curvatureDrive(double throttle, double turn){
 
-    /*
     if(Math.abs(throttle) <= 0.1){
-      m_drive.curvatureDrive(throttle, turn , true);
+      m_drive.curvatureDrive(throttle, 0.5 * turn , true);
     } else{
       m_drive.curvatureDrive(throttle, turn, false);
-    }*/
+    }
 
-    m_drive.curvatureDrive(throttle, turn, false);
   }
 
   /**
