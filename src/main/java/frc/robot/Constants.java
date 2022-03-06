@@ -99,4 +99,7 @@ public final class Constants {
 
     public static final double THROUGH_BORE_ENCODER_REVS_PER_TICK = 1.0 / 2048.0;
 
+    // 0 for red, 1 for blue
+    public static int allianceColor = 0;
+
 }

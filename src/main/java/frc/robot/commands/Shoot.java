@@ -24,7 +24,7 @@ public class Shoot extends CommandBase {
   double kp = 0.00014;
   double ki = 0.0;
   double kd = 0.0;
-  double setpoint = 1750.0;
+  double setpoint = Shooter.shootSetpoint;
   double power = 0.0;
   double tolerance = 50.0;
   PIDController controller = new PIDController(kp, ki, kd);
@@ -58,6 +58,8 @@ public class Shoot extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+
+    setpoint = Shooter.shootSetpoint;
     
     double adjustedkp = shooterData.getEntryData("kP").getDouble();
     double adjustedki = shooterData.getEntryData("kI").getDouble();
@@ -70,12 +72,12 @@ public class Shoot extends CommandBase {
       kd = adjustedkd;
 
       controller.setPID(kp, ki, kd);
-      setpoint = adjustedSetpoint;
+      Shooter.shootSetpoint = adjustedSetpoint;
     }
 
     if(Shooter.State == Shooter.STATES.SHOOT) {
 
-      double velocity = setpoint;
+      double velocity = Shooter.shootSetpoint;
       velocity /= 60.0; //In rotations per second
 
       controller.setSetpoint(velocity);
@@ -90,7 +92,7 @@ public class Shoot extends CommandBase {
 
       if(Math.abs(shooter.getRPM() - setpoint) <= tolerance && toleranceTimer.get() > 1.0){
 
-        Conveyor.State = Conveyor.STATES.LIFT;
+        Conveyor.State = Conveyor.STATES.FEED;
 
       } else if(Math.abs(shooter.getRPM() - setpoint) <= tolerance){
         
@@ -104,6 +106,21 @@ public class Shoot extends CommandBase {
 
       lastPressed = true;
 
+    } else if(Shooter.State == Shooter.STATES.EXPEL){
+
+      double velocity = Shooter.shootSetpoint;
+      velocity /= 60.0; //In rotations per second
+
+      controller.setSetpoint(velocity);
+
+      double rpm = shooter.getRPM();
+      double power = feedforward.calculate(velocity) + controller.calculate(velocity);
+      shooterData.updateEntry("RPM", rpm);
+      shooterData.updateEntry("Setpoint", setpoint);
+      shooterData.updateEntry("Power", power);
+
+      shooter.setVoltage(power);
+    
     } else if (Shooter.State == Shooter.STATES.STOP){
 
       if(lastPressed){

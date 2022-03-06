@@ -14,7 +14,7 @@ import frc.robot.wrappers.TalonFXEncoder;
 public class Shooter extends SubsystemBase {
   /** Creates a new Shooter. */
 
-  public static enum STATES {SHOOT, STOP};
+  public static enum STATES {SHOOT, EXPEL, STOP};
 
   public static STATES State = STATES.STOP;
 
@@ -23,6 +23,9 @@ public class Shooter extends SubsystemBase {
 
   TalonFXEncoder leftEncoder;
   TalonFXEncoder rightEncoder;
+
+  public static double shootSetpoint = 1750.0;
+  public static double expelSetpoint = 400.0;
 
   public Shooter() {
 

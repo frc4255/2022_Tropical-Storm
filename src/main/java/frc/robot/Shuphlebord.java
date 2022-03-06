@@ -10,5 +10,6 @@ public class Shuphlebord {
     public static TabData drivetrainData = new TabData("Drivetrain");
     public static TabData shooterData = new TabData("Shooter");
     public static TabData intakeData = new TabData("Intake");
+    public static TabData conveyorData = new TabData("Conveyor");
 
 }

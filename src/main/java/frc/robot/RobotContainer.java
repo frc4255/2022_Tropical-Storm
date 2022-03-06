@@ -16,7 +16,7 @@ import frc.robot.Constants.DTProperties;
 import frc.robot.commands.Climb;
 import frc.robot.commands.Drive;
 import frc.robot.commands.Funnel;
-import frc.robot.commands.Lift;
+import frc.robot.commands.Convey;
 import frc.robot.commands.Shoot;
 import frc.robot.commands.Suck;
 import frc.robot.subsystems.Intake;
@@ -67,7 +67,7 @@ public class RobotContainer {
 
     // Configure default commands
     m_drivetrain.setDefaultCommand(new Drive(m_drivetrain));
-    m_conveyor.setDefaultCommand(new Lift(m_conveyor));
+    m_conveyor.setDefaultCommand(new Convey(m_conveyor));
     m_hopper.setDefaultCommand(new Funnel(m_hopper));
     m_intake.setDefaultCommand(new Suck(m_intake));
     m_shooter.setDefaultCommand(new Shoot(m_shooter));
@@ -89,16 +89,10 @@ public class RobotContainer {
     expelButton.whenReleased(() -> Intake.State = Intake.STATES.STOP).whenReleased(() -> Hopper.State = Hopper.STATES.STOP);
 
     shootButton.whileHeld(() -> Shooter.State = Shooter.STATES.SHOOT);
-    shootButton.whenReleased(() -> Shooter.State = Shooter.STATES.STOP);
+    shootButton.whenReleased(() -> Shooter.State = Shooter.STATES.STOP).whenReleased(() -> Conveyor.State = Conveyor.STATES.INDEX);
 
     hopperIntakeButton.whileHeld(() -> Hopper.State = Hopper.STATES.FUNNEL);
     hopperIntakeButton.whenReleased(() -> Hopper.State = Hopper.STATES.STOP);
-
-    liftButton.whileHeld(() -> Conveyor.State = Conveyor.STATES.LIFT);
-    liftButton.whenReleased(() -> Conveyor.State = Conveyor.STATES.STOP);
-
-    lowerButton.whileHeld(() -> Conveyor.State = Conveyor.STATES.LOWER);
-    lowerButton.whenReleased(() -> Conveyor.State = Conveyor.STATES.STOP);
 
     armUpButton.whileHeld(() -> Climber.State = Climber.STATES.ARMUP);
     armUpButton.whenReleased(() -> Climber.State = Climber.STATES.STOP);

@@ -17,8 +17,8 @@ public class Climber extends SubsystemBase {
   public static STATES State = STATES.STOP;
 
   public WPI_TalonFX motor;
-  public double armUpSpeed = 0.4;
-  public double armDownSpeed = -0.4;
+  public double armUpSpeed = -0.8;
+  public double armDownSpeed = 0.8;
   
   public Climber() {
     this.motor = new WPI_TalonFX(Constants.Climber.motor);
