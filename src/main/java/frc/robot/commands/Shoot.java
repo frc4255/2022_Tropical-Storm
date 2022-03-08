@@ -108,7 +108,7 @@ public class Shoot extends CommandBase {
 
     } else if(Shooter.State == Shooter.STATES.EXPEL){
 
-      double velocity = Shooter.shootSetpoint;
+      double velocity = Shooter.expelSetpoint;
       velocity /= 60.0; //In rotations per second
 
       controller.setSetpoint(velocity);
@@ -125,7 +125,7 @@ public class Shoot extends CommandBase {
 
       if(lastPressed){
 
-        Conveyor.State = Conveyor.STATES.STOP;
+        Conveyor.State = Conveyor.STATES.INDEX;
 
       }
 

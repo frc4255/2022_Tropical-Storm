@@ -19,7 +19,7 @@ public class Conveyor extends SubsystemBase {
     
   public static enum STATES {INDEX, FEED, STOP};
   
-  public static STATES State = STATES.STOP;
+  public static STATES State = STATES.INDEX;
 
   public WPI_TalonFX motor;
   public double liftSpeed = 0.2;
@@ -29,7 +29,7 @@ public class Conveyor extends SubsystemBase {
 
   private ColorSensorV3 colorSensor;
 
-  AnalogInput ultrasonicSensor = new AnalogInput(3); 
+  AnalogInput IRSensor = new AnalogInput(0); 
 
   /** Creates a new Conveyor. */
   public Conveyor() {
@@ -37,7 +37,7 @@ public class Conveyor extends SubsystemBase {
     motor = new WPI_TalonFX(Constants.Conveyor.motor);
 
     colorSensor = new ColorSensorV3(i2cPort);
-    ultrasonicSensor.setAverageBits(4);
+    IRSensor.setAverageBits(4);
 
   }
 
@@ -58,23 +58,32 @@ public class Conveyor extends SubsystemBase {
   
   public boolean hasSecondBall(){
 
-    Shuphlebord.conveyorData.updateEntry("Ultrasonic Sensor Value", ultrasonicSensor.getAverageValue());
+
+    double value = IRSensor.getAverageValue();
+
+    if(value < 1000.0){
+
+      return true;
+
+    }
 
     return false;
 
   }
 
 
-  public void displayRawColors(){
+  public void displayConveyorValues(){
 
     Color color = colorSensor.getColor();
     int proximity = colorSensor.getProximity();
+    int secondBall = hasSecondBall() == true ? 0 : 1;
 
     Shuphlebord.conveyorData.updateEntry("Red", color.red);
     Shuphlebord.conveyorData.updateEntry("Blue", color.blue);
     Shuphlebord.conveyorData.updateEntry("Green", color.green);
     Shuphlebord.conveyorData.updateEntry("Proximity", proximity);
     Shuphlebord.conveyorData.updateEntry("Correct Ball", hasCorrectBall());
+    Shuphlebord.conveyorData.updateEntry("Second Ball", secondBall);
     
   }
 
@@ -89,7 +98,7 @@ public class Conveyor extends SubsystemBase {
     Color color = colorSensor.getColor();
     int proximity = colorSensor.getProximity();
     int proximityThreshold = 80;
-    double blueThreshold = 0.15;
+    double blueThreshold = 0.13;
     double redThreshold = 0.2;
 
     if(proximity > proximityThreshold){

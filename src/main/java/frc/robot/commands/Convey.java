@@ -20,9 +20,9 @@ public class Convey extends CommandBase {
   Timer shootTimer = new Timer();
 
   boolean expelling = false;
-  boolean shooting = true;
+  boolean shooting = false;
 
-  double expelTime = 3.0;
+  double expelTime = 0.5;
   double shootTime = 3.0;
 
   /** Creates a new Lift. */
@@ -39,20 +39,25 @@ public class Convey extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-
+  
     if(Conveyor.State == Conveyor.STATES.STOP){
+
+      System.out.println("Conveyor Stopped!");
 
       this.conveyor.stop();
 
     } else if(Conveyor.State == Conveyor.STATES.INDEX){
 
-
       if(expelling || shooting){
 
-        if(expelTimer.get() > expelTime){
+        System.out.println("Shooting or Expelling!");
+
+        if(expelTimer.get() > expelTime || this.conveyor.hasCorrectBall() == 0){
 
           expelling = false;
           expelTimer.reset();
+          Intake.State = Intake.STATES.STOP;
+          Hopper.State = Hopper.STATES.STOP;
 
         }
 
@@ -60,37 +65,47 @@ public class Convey extends CommandBase {
 
           shooting = false;
           shootTimer.reset();
+          Shooter.State = Shooter.STATES.STOP;
 
         }
 
       //-----------------------------------------------------------------
       } else if(this.conveyor.hasCorrectBall() == 1){
 
-          if(this.conveyor.hasSecondBall()){
+        System.out.println("Has Incorrect Ball");
 
-            this.conveyor.set(this.conveyor.lowerSpeed);
-            Intake.State = Intake.STATES.EXPEL;
-            Hopper.State = Hopper.STATES.EXPEL;
-            expelling = true;
-            expelTimer.start();
+        if(this.conveyor.hasSecondBall()){
 
-          //-----------------------------------------------------------------
-          } else {
-  
-            this.conveyor.set(this.conveyor.liftSpeed);
-            Shooter.State = Shooter.STATES.EXPEL;
-            shooting = true;
+          this.conveyor.set(this.conveyor.lowerSpeed);
+          Intake.State = Intake.STATES.EXPEL;
+          Hopper.State = Hopper.STATES.EXPEL;
+          expelling = true;
+          expelTimer.start();
 
-          }
+        //-----------------------------------------------------------------
+        } else {
+
+          this.conveyor.set(this.conveyor.liftSpeed);
+          Shooter.State = Shooter.STATES.EXPEL;
+          shooting = true;
+          shootTimer.start();
+
+        }
         
       //-----------------------------------------------------------------
       } else {
+
+        System.out.println("Conveyor has correct or no ball!");
 
         if(this.conveyor.hasSecondBall()){
 
           this.conveyor.stop();
         
         //-----------------------------------------------------------------
+        } else if(this.conveyor.hasCorrectBall() == 2){
+
+          this.conveyor.stop();
+
         } else{
 
           this.conveyor.set(this.conveyor.liftSpeed);
@@ -105,8 +120,7 @@ public class Convey extends CommandBase {
 
     }
 
-    this.conveyor.displayRawColors();
-    this.conveyor.hasSecondBall();
+    this.conveyor.displayConveyorValues();
 
   }
 
