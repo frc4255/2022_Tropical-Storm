@@ -75,19 +75,20 @@ public class Shoot extends CommandBase {
       Shooter.shootSetpoint = adjustedSetpoint;
     }
 
+
     if(Shooter.State == Shooter.STATES.SHOOT) {
 
-      double velocity = Shooter.shootSetpoint;
-      velocity /= 60.0; //In rotations per second
+      double velocitySetpoint = Shooter.shootSetpoint;
+      velocitySetpoint /= 60.0; //In rotations per second
 
-      controller.setSetpoint(velocity);
+      controller.setSetpoint(velocitySetpoint);
 
-      double rpm = shooter.getRPM();
-      double power = feedforward.calculate(velocity) + controller.calculate(rpm / 60.0);
-      shooterData.updateEntry("RPM", rpm);
+      double rps = shooter.getRPM() / 60.0;
+      double power = feedforward.calculate(velocitySetpoint) + controller.calculate(rps / 60.0);
+      shooterData.updateEntry("RPM", rps * 60.0);
       shooterData.updateEntry("Setpoint", setpoint);
       shooterData.updateEntry("Power", power);
-      shooterData.updateEntry("Error", setpoint - rpm);
+      shooterData.updateEntry("Error", setpoint - rps);
 
       shooter.setVoltage(power);
 
@@ -109,20 +110,20 @@ public class Shoot extends CommandBase {
 
     } else if(Shooter.State == Shooter.STATES.EXPEL){
 
-      double velocity = Shooter.expelSetpoint;
-      velocity /= 60.0; //In rotations per second
+      double velocitySetpoint = Shooter.expelSetpoint;
+      velocitySetpoint /= 60.0; //In rotations per second
 
-      controller.setSetpoint(velocity);
+      controller.setSetpoint(velocitySetpoint);
 
-      double rpm = shooter.getRPM();
-      double power = feedforward.calculate(velocity) + controller.calculate(rpm / 60.0);
-      shooterData.updateEntry("RPM", rpm);
+      double rps = shooter.getRPM() / 60; 
+      double power = feedforward.calculate(velocitySetpoint) + controller.calculate(rps);
+      shooterData.updateEntry("RPM", rps * 60.0);
       shooterData.updateEntry("Setpoint", setpoint);
       shooterData.updateEntry("Power", power);
 
       shooter.setVoltage(power);
     
-    } else if (Shooter.State == Shooter.STATES.STOP){
+    } else if(Shooter.State == Shooter.STATES.STOP){
 
       if(lastPressed){
 

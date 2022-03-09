@@ -22,8 +22,8 @@ public class Convey extends CommandBase {
   boolean expelling = false;
   boolean shooting = false;
 
-  double expelTime = 0.5;
-  double shootTime = 1.2;
+  double expelLimit = 0.5;
+  double shootLimit = 1.2;
 
   /** Creates a new Lift. */
   public Convey(Conveyor m_conveyor) {
@@ -52,7 +52,7 @@ public class Convey extends CommandBase {
 
         System.out.println("Shooting or Expelling!");
 
-        if(expelTimer.get() > expelTime || this.conveyor.hasCorrectBall() == 0){
+        if(expelTimer.get() > expelLimit || this.conveyor.hasCorrectBall() == 0){
 
           expelling = false;
           expelTimer.reset();
@@ -61,7 +61,7 @@ public class Convey extends CommandBase {
 
         }
 
-        if(shootTimer.get() > shootTime){
+        if(shootTimer.get() > shootLimit){
 
           shooting = false;
           shootTimer.reset();

@@ -7,6 +7,7 @@ import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -82,7 +83,9 @@ public class Drivetrain extends SubsystemBase {
       firstRead = false;
     }
 
-    m_odometry.update(m_gyro.getRotation2d(), -m_leftEncoder.getDistance(), m_rightEncoder.getDistance());
+    Rotation2d rot = new Rotation2d(-m_gyro.getRotation2d().getRadians());
+
+    m_odometry.update(rot, -m_leftEncoder.getDistance(), m_rightEncoder.getDistance());
     Shuphlebord.drivetrainData.updateEntry("Pose X", getPose().getX());
     Shuphlebord.drivetrainData.updateEntry("Pose Y", getPose().getY());
     Shuphlebord.drivetrainData.updateEntry("Pose A", getPose().getRotation().getDegrees());

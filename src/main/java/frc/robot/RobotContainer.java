@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DTProperties;
+import frc.robot.autonomous.AutoMechManager;
 import frc.robot.commands.Climb;
 import frc.robot.commands.Drive;
 import frc.robot.commands.Funnel;
@@ -20,6 +21,7 @@ import frc.robot.commands.Convey;
 import frc.robot.commands.Shoot;
 import frc.robot.commands.Suck;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.MechManager;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Hopper;
@@ -38,6 +40,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
+  private final MechManager m_mechManager = new MechManager();
   private final Shooter m_shooter = new Shooter();
   private final Drivetrain m_drivetrain = new Drivetrain();
   private final Intake m_intake = new Intake();
@@ -67,6 +70,7 @@ public class RobotContainer {
     configureButtonBindings();
 
     // Configure default commands
+    m_mechManager.setDefaultCommand(new AutoMechManager());
     m_drivetrain.setDefaultCommand(new Drive(m_drivetrain));
     m_conveyor.setDefaultCommand(new Convey(m_conveyor));
     m_hopper.setDefaultCommand(new Funnel(m_hopper));
