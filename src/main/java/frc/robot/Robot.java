@@ -28,9 +28,11 @@ public class Robot extends TimedRobot {
   private RobotContainer m_robotContainer;
 
   // PATHS FOR AUTO
-  static String shortyDir = "output/shorty.wpilib.json";
+  static String ball1Dir = "output/Ball1.wpilib.json";
+  static String shoot1Dir = "output/Shoot1.wpilib.json";
 
-  public static Trajectory shortyTrajectory = new Trajectory();
+  public static Trajectory ball1Trajectory = new Trajectory();
+  public static Trajectory shoot1Trajectory = new Trajectory();
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -40,7 +42,8 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
-    shortyTrajectory = loadTrajectories(shortyDir);
+    ball1Trajectory = loadTrajectories(ball1Dir);
+    shoot1Trajectory = loadTrajectories(shoot1Dir);
 
     m_robotContainer = new RobotContainer();
     LiveWindow.disableAllTelemetry();

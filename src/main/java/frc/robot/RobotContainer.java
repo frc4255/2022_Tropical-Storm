@@ -26,6 +26,7 @@ import frc.robot.subsystems.Hopper;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Conveyor;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
@@ -82,7 +83,7 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
 
-    intakeButton.whileHeld(() -> Intake.State = Intake.STATES.INTAKE).whileHeld(() -> Hopper.State = Hopper.STATES.FUNNEL);
+    intakeButton.whenHeld(new InstantCommand(() -> Intake.State = Intake.STATES.INTAKE)).whenHeld(new InstantCommand(() -> Hopper.State = Hopper.STATES.FUNNEL));
     intakeButton.whenReleased(() -> Intake.State = Intake.STATES.STOP).whenReleased(() -> Hopper.State = Hopper.STATES.STOP);
 
     expelButton.whileHeld(() -> Intake.State = Intake.STATES.EXPEL).whileHeld(() -> Hopper.State = Hopper.STATES.EXPEL);
@@ -125,16 +126,13 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // CREATE PATHS
-    RamseteCommand shorty = getRamseteCommand(Robot.shortyTrajectory);
-    // RamseteCommand sPathToBalls = getRamseteCommand(Robot.sPTBTrajectory);
-    // RamseteCommand intakeBalls = getRamseteCommand(Robot.iBTrajectory);
-    // RamseteCommand backToLine = getRamseteCommand(Robot.bTLTrajectory);
-    // RamseteCommand driveAndIntake = getRamseteCommand(Robot.dAITrajectory);
+    RamseteCommand ball1 = getRamseteCommand(Robot.ball1Trajectory);
+    RamseteCommand shoot1 = getRamseteCommand(Robot.shoot1Trajectory);
 
     // Reset odometry to the starting pose of the trajectory.
-    m_drivetrain.resetOdometry(Robot.shortyTrajectory.getInitialPose());
+    m_drivetrain.resetOdometry(Robot.ball1Trajectory.getInitialPose());
 
     
-    return shorty;
+    return ball1.andThen(shoot1);
   }
 }

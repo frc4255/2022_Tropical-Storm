@@ -23,7 +23,7 @@ public class Convey extends CommandBase {
   boolean shooting = false;
 
   double expelTime = 0.5;
-  double shootTime = 3.0;
+  double shootTime = 1.2;
 
   /** Creates a new Lift. */
   public Convey(Conveyor m_conveyor) {
@@ -85,7 +85,7 @@ public class Convey extends CommandBase {
         //-----------------------------------------------------------------
         } else {
 
-          this.conveyor.set(this.conveyor.liftSpeed);
+          this.conveyor.set(this.conveyor.liftSpeed * 2.0);
           Shooter.State = Shooter.STATES.EXPEL;
           shooting = true;
           shootTimer.start();
