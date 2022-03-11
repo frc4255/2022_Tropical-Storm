@@ -6,6 +6,7 @@ import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.drive.DifferentialDrive.WheelSpeeds;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
@@ -142,6 +143,26 @@ public class Drivetrain extends SubsystemBase {
     } else{
       m_drive.curvatureDrive(throttle, turn, false);
     }
+
+  }
+
+  /**
+   * Returns Wheel Speed Setpoints for curvature drive
+   * 
+   * @param throttle
+   * @param turn
+   */
+  public WheelSpeeds curvatureDriveIK(double throttle, double turn){
+
+    WheelSpeeds speeds;
+
+    if(Math.abs(throttle) <= 0.1){
+      speeds = DifferentialDrive.curvatureDriveIK(throttle, 0.5 * turn , true);
+    } else{
+      speeds = DifferentialDrive.curvatureDriveIK(throttle, turn, false);
+    }
+
+    return speeds;
 
   }
 

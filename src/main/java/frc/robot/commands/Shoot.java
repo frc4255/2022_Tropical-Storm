@@ -21,9 +21,9 @@ public class Shoot extends CommandBase {
   TabData shooterData = Shuphlebord.shooterData;
 
   
-  double kp = 0.5;
+  double kp = 0.0001;
   double ki = 0.0;
-  double kd = 0.023;
+  double kd = 0.0;
   double setpoint = Shooter.shootSetpoint;
   double power = 0.0;
   double tolerance = 50.0;
@@ -84,7 +84,7 @@ public class Shoot extends CommandBase {
       controller.setSetpoint(velocitySetpoint);
 
       double rps = shooter.getRPM() / 60.0;
-      double power = feedforward.calculate(velocitySetpoint) + controller.calculate(rps / 60.0);
+      double power = feedforward.calculate(velocitySetpoint) + controller.calculate(rps);
       shooterData.updateEntry("RPM", rps * 60.0);
       shooterData.updateEntry("Setpoint", setpoint);
       shooterData.updateEntry("Power", power);

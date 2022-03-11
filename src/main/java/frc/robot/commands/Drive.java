@@ -4,10 +4,14 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.wpilibj.drive.DifferentialDrive.WheelSpeeds;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 import frc.robot.Shuphlebord;
 import frc.robot.TabData;
+import frc.robot.Constants.DTProperties;
 import frc.robot.subsystems.Drivetrain;
 
 public class Drive extends CommandBase {
@@ -15,6 +19,11 @@ public class Drive extends CommandBase {
   @SuppressWarnings({ "PMD.UnusedPrivateField", "PMD.SingularField" })
 
   Drivetrain drivetrain;
+
+  SlewRateLimiter filter = new SlewRateLimiter(0.5);
+
+  SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(DTProperties.ksVolts, DTProperties.kvVoltSecondsPerMeter,
+                                                                  DTProperties.kaVoltSecondsSquaredPerMeter);
 
   TabData drivetrainData = Shuphlebord.drivetrainData;
 
@@ -46,23 +55,21 @@ public class Drive extends CommandBase {
 
     double controllerY = -RobotContainer.driveController.getLeftY();
     double controllerX = RobotContainer.driveController.getRightX();
-    double exponent = 3.0;
-    double dirY = 1.0;
-    double dirX = 1.0;
 
-    double powerMod = 0.5;
+    WheelSpeeds speeds = drivetrain.curvatureDriveIK(controllerY, controllerX); 
 
-    if(exponent % 2.0 == 1.0){
-      dirY = Math.signum(controllerY);
-      dirX = Math.signum(controllerX);
-    }
+    double left = speeds.left;
+    double right = speeds.right;
+    double maxSpeed = 4.0;
 
-    double throttle = powerMod * Math.signum(controllerY) * Math.pow(dirY * controllerY, 3.0);
-    double turn = powerMod * Math.signum(controllerX) * Math.pow(dirX * controllerX, 3.0);
+    left = filter.calculate(left) * maxSpeed;
+    right = filter.calculate(right) * maxSpeed;
 
-    // System.out.println("Left Y: " + throttle + ", Right X: " + turn);
+    double leftVolts = feedforward.calculate(left);
+    double rightVolts = feedforward.calculate(right);
 
-    drivetrain.curvatureDrive(throttle, turn); 
+    drivetrain.tankDriveVolts(leftVolts, rightVolts);
+
   }
 
   // Called once the command ends or is interrupted.

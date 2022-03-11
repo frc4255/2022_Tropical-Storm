@@ -1,7 +1,7 @@
 {
   "SysId": {
-    "Analysis Type": "Drivetrain",
-    "AnalyzerJSONLocation": "C:\\Users\\Robodores\\FRC\\Blunderbuss\\src\\main\\char-configs\\sysid_data20220308-165633.json",
+    "Analysis Type": "General Mechanism",
+    "AnalyzerJSONLocation": "C:\\Users\\cvela\\FRC\\Blunderbuss\\src\\main\\char-configs\\sysid_data20220308-165633.json",
     "NetworkTables Settings": {
       "serverTeam": "4255"
     },
