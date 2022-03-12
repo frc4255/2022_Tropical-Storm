@@ -129,7 +129,7 @@ public class Drivetrain extends SubsystemBase {
   public void arcadeDrive(double fwd, double rot) {
     m_drive.arcadeDrive(fwd, rot);
   }
-
+  
   /**
    * Drives the robot using curvature drive
    * 
@@ -176,6 +176,17 @@ public class Drivetrain extends SubsystemBase {
     m_leftMotors.setVoltage(leftVolts);
     m_rightMotors.setVoltage(rightVolts);
     m_drive.feed();
+  }
+
+  /**
+   * 
+   * 
+   */
+  public void tankDrive(double leftSpeed, double rightSpeed){
+
+    m_leftMotors.set(leftSpeed);
+    m_rightMotors.set(rightSpeed);
+
   }
 
   /**

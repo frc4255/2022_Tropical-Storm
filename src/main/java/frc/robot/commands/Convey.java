@@ -42,7 +42,7 @@ public class Convey extends CommandBase {
   
     if(Conveyor.State == Conveyor.STATES.STOP){
 
-      System.out.println("Conveyor Stopped!");
+      //System.out.println("Conveyor Stopped!");
 
       this.conveyor.stop();
 
@@ -50,7 +50,7 @@ public class Convey extends CommandBase {
 
       if(expelling || shooting){
 
-        System.out.println("Shooting or Expelling!");
+        //System.out.println("Shooting or Expelling!");
 
         if(expelTimer.get() > expelLimit || this.conveyor.hasCorrectBall() == 0){
 
@@ -72,7 +72,7 @@ public class Convey extends CommandBase {
       //-----------------------------------------------------------------
       } else if(this.conveyor.hasCorrectBall() == 1){
 
-        System.out.println("Has Incorrect Ball");
+        //System.out.println("Has Incorrect Ball");
 
         if(this.conveyor.hasSecondBall()){
 
@@ -95,7 +95,7 @@ public class Convey extends CommandBase {
       //-----------------------------------------------------------------
       } else {
 
-        System.out.println("Conveyor has correct or no ball!");
+        //System.out.println("Conveyor has correct or no ball!");
 
         if(this.conveyor.hasSecondBall()){
 

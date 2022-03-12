@@ -20,7 +20,7 @@ public class Drive extends CommandBase {
 
   Drivetrain drivetrain;
 
-  SlewRateLimiter filter = new SlewRateLimiter(0.5);
+  SlewRateLimiter filter = new SlewRateLimiter(0.2);
 
   SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(DTProperties.ksVolts, DTProperties.kvVoltSecondsPerMeter,
                                                                   DTProperties.kaVoltSecondsSquaredPerMeter);
@@ -52,23 +52,17 @@ public class Drive extends CommandBase {
     drivetrainData.updateEntry("Pose Y", drivetrain.getPose().getY());
     drivetrainData.updateEntry("Pose A", drivetrain.getPose().getRotation().getDegrees());
 
-
     double controllerY = -RobotContainer.driveController.getLeftY();
     double controllerX = RobotContainer.driveController.getRightX();
 
-    WheelSpeeds speeds = drivetrain.curvatureDriveIK(controllerY, controllerX); 
+    double filteredY = filter.calculate(controllerY);
+
+    WheelSpeeds speeds = drivetrain.curvatureDriveIK(filteredY, controllerX);
 
     double left = speeds.left;
     double right = speeds.right;
-    double maxSpeed = 4.0;
 
-    left = filter.calculate(left) * maxSpeed;
-    right = filter.calculate(right) * maxSpeed;
-
-    double leftVolts = feedforward.calculate(left);
-    double rightVolts = feedforward.calculate(right);
-
-    drivetrain.tankDriveVolts(leftVolts, rightVolts);
+    drivetrain.tankDrive(left, right);
 
   }
 

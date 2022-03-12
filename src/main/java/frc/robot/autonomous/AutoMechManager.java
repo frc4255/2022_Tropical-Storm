@@ -20,8 +20,9 @@ public class AutoMechManager extends CommandBase {
   double autoIntakeLimit = 2.0;
   Timer intakeTimer = new Timer();
 
-  public AutoMechManager() {
+  public AutoMechManager(MechManager m_mechManager) {
     // Use addRequirements() here to declare subsystem dependencies.
+    addRequirements(m_mechManager);
   }
 
   // Called when the command is initially scheduled.

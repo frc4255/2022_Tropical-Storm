@@ -70,7 +70,7 @@ public class RobotContainer {
     configureButtonBindings();
 
     // Configure default commands
-    m_mechManager.setDefaultCommand(new AutoMechManager());
+    m_mechManager.setDefaultCommand(new AutoMechManager(m_mechManager));
     m_drivetrain.setDefaultCommand(new Drive(m_drivetrain));
     m_conveyor.setDefaultCommand(new Convey(m_conveyor));
     m_hopper.setDefaultCommand(new Funnel(m_hopper));
