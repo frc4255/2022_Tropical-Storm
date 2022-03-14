@@ -20,7 +20,7 @@ public class Drive extends CommandBase {
 
   Drivetrain drivetrain;
 
-  SlewRateLimiter filter = new SlewRateLimiter(0.2);
+  SlewRateLimiter filter = new SlewRateLimiter(0.6);
 
   SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(DTProperties.ksVolts, DTProperties.kvVoltSecondsPerMeter,
                                                                   DTProperties.kaVoltSecondsSquaredPerMeter);
@@ -61,6 +61,9 @@ public class Drive extends CommandBase {
 
     double left = speeds.left;
     double right = speeds.right;
+
+    drivetrainData.updateEntry("Filtered Left", left);
+    drivetrainData.updateEntry("Filtered Right", right);
 
     drivetrain.tankDrive(left, right);
 

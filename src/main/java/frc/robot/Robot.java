@@ -15,6 +15,8 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.autonomous.AutoMechManager;
+import frc.robot.subsystems.MechManager.AUTO_STATES;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -30,9 +32,13 @@ public class Robot extends TimedRobot {
   // PATHS FOR AUTO
   static String ball1Dir = "output/Ball1.wpilib.json";
   static String shoot1Dir = "output/Shoot1.wpilib.json";
+  static String ball2and3Dir = "output/Ball2and3.wpilib.json";
+  static String shoot2Dir = "output/Shoot2.wpilib.json";
 
   public static Trajectory ball1Trajectory = new Trajectory();
   public static Trajectory shoot1Trajectory = new Trajectory();
+  public static Trajectory ball2and3Trajectory = new Trajectory();
+  public static Trajectory shoot2Trajectory = new Trajectory();
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -44,6 +50,8 @@ public class Robot extends TimedRobot {
     // autonomous chooser on the dashboard.
     ball1Trajectory = loadTrajectories(ball1Dir);
     shoot1Trajectory = loadTrajectories(shoot1Dir);
+    ball2and3Trajectory = loadTrajectories(ball2and3Dir);
+    shoot2Trajectory = loadTrajectories(shoot2Dir);
 
     m_robotContainer = new RobotContainer();
     LiveWindow.disableAllTelemetry();
@@ -95,6 +103,7 @@ public class Robot extends TimedRobot {
     // this line or comment it out.
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
+      new AutoMechManager(AUTO_STATES.DISABLE_INTAKE).schedule();;
     }
   }
 

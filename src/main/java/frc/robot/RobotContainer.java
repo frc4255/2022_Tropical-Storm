@@ -21,8 +21,8 @@ import frc.robot.commands.Convey;
 import frc.robot.commands.Shoot;
 import frc.robot.commands.Suck;
 import frc.robot.subsystems.Intake;
-import frc.robot.subsystems.MechManager;
 import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.MechManager.AUTO_STATES;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Hopper;
 import frc.robot.subsystems.Climber;
@@ -40,7 +40,6 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private final MechManager m_mechManager = new MechManager();
   private final Shooter m_shooter = new Shooter();
   private final Drivetrain m_drivetrain = new Drivetrain();
   private final Intake m_intake = new Intake();
@@ -70,7 +69,6 @@ public class RobotContainer {
     configureButtonBindings();
 
     // Configure default commands
-    m_mechManager.setDefaultCommand(new AutoMechManager(m_mechManager));
     m_drivetrain.setDefaultCommand(new Drive(m_drivetrain));
     m_conveyor.setDefaultCommand(new Convey(m_conveyor));
     m_hopper.setDefaultCommand(new Funnel(m_hopper));
@@ -94,7 +92,9 @@ public class RobotContainer {
     expelButton.whenReleased(() -> Intake.State = Intake.STATES.STOP).whenReleased(() -> Hopper.State = Hopper.STATES.STOP);
 
     shootButton.whileHeld(() -> Shooter.State = Shooter.STATES.SHOOT);
-    shootButton.whenReleased(() -> Shooter.State = Shooter.STATES.STOP).whenReleased(() -> Conveyor.State = Conveyor.STATES.INDEX);
+    shootButton.whenReleased(() -> Shooter.State = Shooter.STATES.STOP).whenReleased(
+                             () -> Conveyor.State = Conveyor.STATES.INDEX).whenReleased(
+                             () -> Hopper.State = Hopper.STATES.STOP);
 
     hopperIntakeButton.whileHeld(() -> Hopper.State = Hopper.STATES.FUNNEL);
     hopperIntakeButton.whenReleased(() -> Hopper.State = Hopper.STATES.STOP);
@@ -132,11 +132,21 @@ public class RobotContainer {
     // CREATE PATHS
     RamseteCommand ball1 = getRamseteCommand(Robot.ball1Trajectory);
     RamseteCommand shoot1 = getRamseteCommand(Robot.shoot1Trajectory);
+    RamseteCommand ball2and3 = getRamseteCommand(Robot.ball2and3Trajectory);
+    RamseteCommand shoot2 = getRamseteCommand(Robot.shoot2Trajectory);
 
     // Reset odometry to the starting pose of the trajectory.
     m_drivetrain.resetOdometry(Robot.ball1Trajectory.getInitialPose());
 
+    Command auto = new AutoMechManager(AUTO_STATES.ENABLE_INTAKE).andThen(
+                  ball1).andThen(
+                  shoot1).andThen(
+                  new AutoMechManager(AUTO_STATES.SHOOT)).andThen(
+                  new AutoMechManager(AUTO_STATES.ENABLE_INTAKE)).andThen(
+                  ball2and3).andThen(
+                  shoot2).andThen(
+                  new AutoMechManager(AUTO_STATES.SHOOT)).andThen(new AutoMechManager(AUTO_STATES.DISABLE_INTAKE));
     
-    return ball1.andThen(shoot1);
+    return auto;
   }
 }

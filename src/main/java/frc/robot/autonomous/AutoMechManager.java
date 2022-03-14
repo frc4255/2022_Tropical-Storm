@@ -14,24 +14,34 @@ import frc.robot.subsystems.Shooter;
 public class AutoMechManager extends CommandBase {
   /** Creates a new AutoMechManager. */
 
-  double autoShootLimit = 4.0;
+  double autoShootLimit = 2.2;
   Timer shootTimer = new Timer();
   
-  double autoIntakeLimit = 2.0;
+  double autoIntakeLimit = 0.25;
   Timer intakeTimer = new Timer();
 
-  public AutoMechManager(MechManager m_mechManager) {
+  boolean finished;
+
+  MechManager.AUTO_STATES state;
+
+  public AutoMechManager(MechManager.AUTO_STATES auto_state) {
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(m_mechManager);
+    state = auto_state;
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+
+    MechManager.State = state;
+
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+
+    System.out.println(MechManager.State);
 
     if(MechManager.State == MechManager.AUTO_STATES.SHOOT && shootTimer.get() >= autoShootLimit){
 
@@ -39,12 +49,14 @@ public class AutoMechManager extends CommandBase {
       shootTimer.reset();
       Shooter.State = Shooter.STATES.STOP;
       Hopper.State = Hopper.STATES.STOP;
+      finished = true;
 
     } else if(MechManager.State == MechManager.AUTO_STATES.SHOOT){
 
       shootTimer.start();
       Shooter.State = Shooter.STATES.SHOOT;
       Hopper.State = Hopper.STATES.FUNNEL;
+      finished = false;
 
     }
 
@@ -55,13 +67,33 @@ public class AutoMechManager extends CommandBase {
       intakeTimer.reset();
       Intake.State = Intake.STATES.STOP;
       Hopper.State = Hopper.STATES.STOP;
+      finished = true;
 
     } else if(MechManager.State == MechManager.AUTO_STATES.INTAKE){
 
       intakeTimer.start();
       Intake.State = Intake.STATES.INTAKE;
       Hopper.State = Hopper.STATES.FUNNEL;
+      finished = false;
 
+    }
+
+
+    if(MechManager.State == MechManager.AUTO_STATES.ENABLE_INTAKE){
+
+      Intake.State = Intake.STATES.INTAKE;
+      Hopper.State = Hopper.STATES.FUNNEL;
+      finished = true;
+      
+    }
+
+
+    if(MechManager.State == MechManager.AUTO_STATES.DISABLE_INTAKE){
+
+      Intake.State = Intake.STATES.STOP;
+      Hopper.State = Hopper.STATES.STOP;
+      finished = true;
+      
     }
 
   }
@@ -73,6 +105,6 @@ public class AutoMechManager extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return finished;
   }
 }

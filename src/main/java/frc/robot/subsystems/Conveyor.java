@@ -22,8 +22,8 @@ public class Conveyor extends SubsystemBase {
   public static STATES State = STATES.INDEX;
 
   public WPI_TalonFX motor;
-  public double liftSpeed = 0.2;
-  public double lowerSpeed = -0.2;
+  public double liftSpeed = 0.3;
+  public double lowerSpeed = -0.3;
 
   private final I2C.Port i2cPort = I2C.Port.kOnboard;
 

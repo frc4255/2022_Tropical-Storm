@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Shuphlebord;
 import frc.robot.TabData;
 import frc.robot.subsystems.Conveyor;
+import frc.robot.subsystems.Hopper;
 import frc.robot.subsystems.Shooter;
 
 public class Shoot extends CommandBase {
@@ -21,9 +22,9 @@ public class Shoot extends CommandBase {
   TabData shooterData = Shuphlebord.shooterData;
 
   
-  double kp = 0.0001;
-  double ki = 0.0;
-  double kd = 0.0;
+  double kp = 0.4;
+  double ki = 0.1;
+  double kd = 0.014;
   double setpoint = Shooter.shootSetpoint;
   double power = 0.0;
   double tolerance = 50.0;
@@ -52,6 +53,8 @@ public class Shoot extends CommandBase {
     shooterData.updateEntry("kI", ki);
     shooterData.updateEntry("kD", kd);
     shooterData.updateEntry("Setpoint", setpoint);
+
+    controller.setIntegratorRange(-1000.0, 0);
 
   }
 
@@ -88,13 +91,14 @@ public class Shoot extends CommandBase {
       shooterData.updateEntry("RPM", rps * 60.0);
       shooterData.updateEntry("Setpoint", setpoint);
       shooterData.updateEntry("Power", power);
-      shooterData.updateEntry("Error", setpoint - rps);
+      shooterData.updateEntry("Error", setpoint - rps * 60.0);
 
       shooter.setVoltage(power);
 
-      if(Math.abs(shooter.getRPM() - setpoint) <= tolerance && toleranceTimer.get() > 1.0){
+      if(Math.abs(shooter.getRPM() - setpoint) <= tolerance && toleranceTimer.get() > 0.1){
 
         Conveyor.State = Conveyor.STATES.FEED;
+        Hopper.State = Hopper.STATES.FUNNEL;
 
       } else if(Math.abs(shooter.getRPM() - setpoint) <= tolerance){
         

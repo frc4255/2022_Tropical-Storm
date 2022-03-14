@@ -157,7 +157,7 @@ public class Drivetrain extends SubsystemBase {
     WheelSpeeds speeds;
 
     if(Math.abs(throttle) <= 0.1){
-      speeds = DifferentialDrive.curvatureDriveIK(throttle, 0.5 * turn , true);
+      speeds = DifferentialDrive.curvatureDriveIK(throttle, 0.25 * turn , true);
     } else{
       speeds = DifferentialDrive.curvatureDriveIK(throttle, turn, false);
     }
@@ -186,6 +186,7 @@ public class Drivetrain extends SubsystemBase {
 
     m_leftMotors.set(leftSpeed);
     m_rightMotors.set(rightSpeed);
+    m_drive.feed();
 
   }
 
