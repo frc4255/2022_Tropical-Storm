@@ -1,6 +1,6 @@
 // Copyright (c) FIRST and other WPILib contributors.
 // Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
+// the WPILib BSD license file in the root directory of project.
 
 package frc.robot.commands;
 
@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Conveyor;
 import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.Conveyor.INDEXING_SUBSTATES;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Hopper;
 
@@ -18,18 +19,19 @@ public class Convey extends CommandBase {
 
   Timer expelTimer = new Timer();
   Timer shootTimer = new Timer();
-
-  boolean expelling = false;
-  boolean shooting = false;
+  Timer shiftTimer = new Timer();
 
   double expelLimit = 0.5;
   double shootLimit = 1.2;
+  double shiftLimit = 0.5;
+
+  INDEXING_SUBSTATES dummyLastSubstate = INDEXING_SUBSTATES.NONE;
 
   /** Creates a new Lift. */
   public Convey(Conveyor m_conveyor) {
     addRequirements(m_conveyor);
 
-    this.conveyor = m_conveyor;
+    conveyor = m_conveyor;
   }
 
   // Called when the command is initially scheduled.
@@ -44,17 +46,19 @@ public class Convey extends CommandBase {
 
       //System.out.println("Conveyor Stopped!");
 
-      this.conveyor.stop();
+      conveyor.stop();
+
+      Conveyor.Substate = INDEXING_SUBSTATES.NONE;
 
     } else if(Conveyor.State == Conveyor.STATES.INDEX){
 
-      if(expelling || shooting){
+      if(Conveyor.Substate != INDEXING_SUBSTATES.NONE){
 
         //System.out.println("Shooting or Expelling!");
 
-        if(expelTimer.get() > expelLimit || this.conveyor.hasCorrectBall() == 0){
+        if(expelTimer.get() > expelLimit || conveyor.hasCorrectBall() == 0){
 
-          expelling = false;
+          Conveyor.Substate = INDEXING_SUBSTATES.NONE;
           expelTimer.reset();
           Intake.State = Intake.STATES.STOP;
           Hopper.State = Hopper.STATES.STOP;
@@ -63,64 +67,89 @@ public class Convey extends CommandBase {
 
         if(shootTimer.get() > shootLimit){
 
-          shooting = false;
+          Conveyor.Substate = INDEXING_SUBSTATES.NONE;
           shootTimer.reset();
           Shooter.State = Shooter.STATES.STOP;
 
         }
 
+        if(shiftTimer.get() > shiftLimit){
+
+          Conveyor.Substate = INDEXING_SUBSTATES.NONE;
+          shiftTimer.reset();
+          conveyor.stop();
+
+        }
+
       //-----------------------------------------------------------------
-      } else if(this.conveyor.hasCorrectBall() == 1){
+      } else if(conveyor.hasCorrectBall() == 1){
 
         //System.out.println("Has Incorrect Ball");
 
-        if(this.conveyor.hasSecondBall()){
+        if(conveyor.hasSecondBall()){
 
-          this.conveyor.set(this.conveyor.lowerSpeed);
+          //conveyor.set(conveyor.lowerSpeed);
           Intake.State = Intake.STATES.EXPEL;
           Hopper.State = Hopper.STATES.EXPEL;
-          expelling = true;
+          Conveyor.Substate = INDEXING_SUBSTATES.EXPELLING;
           expelTimer.start();
 
         //-----------------------------------------------------------------
         } else {
 
-          this.conveyor.set(this.conveyor.liftSpeed * 2.0);
+          conveyor.set(conveyor.liftSpeed * 2.0);
           Shooter.State = Shooter.STATES.EXPEL;
-          shooting = true;
+          Conveyor.Substate = INDEXING_SUBSTATES.SHOOTING;
           shootTimer.start();
 
         }
         
       //-----------------------------------------------------------------
-      } else {
+      } else if(conveyor.hasCorrectBall() == 0){
 
         //System.out.println("Conveyor has correct or no ball!");
 
-        if(this.conveyor.hasSecondBall()){
+        if(conveyor.hasSecondBall()){
 
-          this.conveyor.stop();
+          conveyor.set(conveyor.liftSpeed);
+          Conveyor.Substate = INDEXING_SUBSTATES.SHIFTING;
+          shiftTimer.start();
         
         //-----------------------------------------------------------------
-        } else if(this.conveyor.hasCorrectBall() == 2){
-
-          this.conveyor.stop();
-
         } else{
 
-          this.conveyor.set(this.conveyor.liftSpeed);
+          conveyor.set(conveyor.liftSpeed);
 
         }
+      //-----------------------------------------------------------------
+      } else{
+
+          conveyor.stop();
 
       }
 
     } else if(Conveyor.State == Conveyor.STATES.FEED){
 
-      this.conveyor.set(this.conveyor.liftSpeed);
+      conveyor.set(conveyor.liftSpeed);
+
+      Conveyor.Substate = INDEXING_SUBSTATES.NONE;
 
     }
 
-    this.conveyor.displayConveyorValues();
+    if(Conveyor.State != Conveyor.STATES.INDEX){
+
+      Conveyor.lastSubstate = INDEXING_SUBSTATES.NONE;
+      Conveyor.Substate = INDEXING_SUBSTATES.NONE;
+
+    } else if(Conveyor.Substate != dummyLastSubstate){
+
+      Conveyor.lastSubstate = dummyLastSubstate;
+
+    }
+
+    dummyLastSubstate = Conveyor.Substate;
+
+    conveyor.displayConveyorValues();
 
   }
 

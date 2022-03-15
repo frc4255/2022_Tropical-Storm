@@ -18,8 +18,12 @@ public class Conveyor extends SubsystemBase {
 
     
   public static enum STATES {INDEX, FEED, STOP};
+  public static enum INDEXING_SUBSTATES {NONE, SHOOTING, EXPELLING, SHIFTING}
   
   public static STATES State = STATES.INDEX;
+  public static INDEXING_SUBSTATES Substate = INDEXING_SUBSTATES.NONE;
+
+  public static INDEXING_SUBSTATES lastSubstate = INDEXING_SUBSTATES.NONE;
 
   public WPI_TalonFX motor;
   public double liftSpeed = 0.3;
@@ -56,8 +60,10 @@ public class Conveyor extends SubsystemBase {
   }
 
   
+  /**
+   * @return True if a ball is at the second position, false otherwise
+   */
   public boolean hasSecondBall(){
-
 
     double value = IRSensor.getAverageValue();
 
@@ -86,6 +92,7 @@ public class Conveyor extends SubsystemBase {
     Shuphlebord.conveyorData.updateEntry("Second Ball", secondBall);
     
   }
+
 
   /**
    * Returns an int: 0 if ball is correct color, 1 if incorrect, 2 if no ball
@@ -121,6 +128,28 @@ public class Conveyor extends SubsystemBase {
     return code;
   }
 
+  /**
+   * @return Number of correct balls in the conveyor
+   */
+  public int ballsInConveyor(){
+
+    if(Substate == INDEXING_SUBSTATES.NONE && lastSubstate == INDEXING_SUBSTATES.SHIFTING){
+
+      return 2;
+
+    } else if(hasSecondBall() && hasCorrectBall() == 0){
+
+      return 2;
+
+    } else if(hasSecondBall() || hasCorrectBall() == 0){
+
+      return 1;
+
+    }
+
+    return 0;
+
+  }
 
   @Override
   public void periodic() {
