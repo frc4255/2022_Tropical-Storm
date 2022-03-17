@@ -31,9 +31,9 @@ public class Conveyor extends SubsystemBase {
 
   private final I2C.Port i2cPort = I2C.Port.kOnboard;
 
-  private ColorSensorV3 colorSensor;
+  private static ColorSensorV3 colorSensor;
 
-  AnalogInput IRSensor = new AnalogInput(0); 
+  static AnalogInput IRSensor = new AnalogInput(0); 
 
   /** Creates a new Conveyor. */
   public Conveyor() {
@@ -63,7 +63,7 @@ public class Conveyor extends SubsystemBase {
   /**
    * @return True if a ball is at the second position, false otherwise
    */
-  public boolean hasSecondBall(){
+  public static boolean hasSecondBall(){
 
     double value = IRSensor.getAverageValue();
 
@@ -78,28 +78,12 @@ public class Conveyor extends SubsystemBase {
   }
 
 
-  public void displayConveyorValues(){
-
-    Color color = colorSensor.getColor();
-    int proximity = colorSensor.getProximity();
-    int secondBall = hasSecondBall() == true ? 0 : 1;
-
-    Shuphlebord.conveyorData.updateEntry("Red", color.red);
-    Shuphlebord.conveyorData.updateEntry("Blue", color.blue);
-    Shuphlebord.conveyorData.updateEntry("Green", color.green);
-    Shuphlebord.conveyorData.updateEntry("Proximity", proximity);
-    Shuphlebord.conveyorData.updateEntry("Correct Ball", hasCorrectBall());
-    Shuphlebord.conveyorData.updateEntry("Second Ball", secondBall);
-    
-  }
-
-
   /**
    * Returns an int: 0 if ball is correct color, 1 if incorrect, 2 if no ball
    * 
    * @return Number code showing state of ball at hopper
    */
-  public int hasCorrectBall(){
+  public static int hasCorrectBall(){
 
     int code = 2;
     Color color = colorSensor.getColor();
@@ -131,7 +115,7 @@ public class Conveyor extends SubsystemBase {
   /**
    * @return Number of correct balls in the conveyor
    */
-  public int ballsInConveyor(){
+  public static int ballsInConveyor(){
 
     if(Substate == INDEXING_SUBSTATES.NONE && lastSubstate == INDEXING_SUBSTATES.SHIFTING){
 
@@ -148,8 +132,26 @@ public class Conveyor extends SubsystemBase {
     }
 
     return 0;
-
   }
+  
+
+  public void displayConveyorValues(){
+
+    Color color = colorSensor.getColor();
+    int proximity = colorSensor.getProximity();
+    int secondBall = hasSecondBall() == true ? 0 : 1;
+
+    Shuphlebord.conveyorData.updateEntry("Red", color.red);
+    Shuphlebord.conveyorData.updateEntry("Blue", color.blue);
+    Shuphlebord.conveyorData.updateEntry("Green", color.green);
+    Shuphlebord.conveyorData.updateEntry("Proximity", proximity);
+    Shuphlebord.conveyorData.updateEntry("Correct Ball", hasCorrectBall());
+    Shuphlebord.conveyorData.updateEntry("Second Ball", secondBall);
+    Shuphlebord.conveyorData.updateEntry("Number of Balls", ballsInConveyor());
+    //System.out.println("STATE: " + State.toString() + ", SUBSTATE: " + Substate.toString());
+    
+  }
+
 
   @Override
   public void periodic() {

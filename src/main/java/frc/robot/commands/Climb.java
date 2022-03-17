@@ -4,6 +4,7 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Climber;
 
@@ -11,6 +12,10 @@ public class Climb extends CommandBase {
   @SuppressWarnings({ "PMD.UnusedPrivateField", "PMD.SingularField" })
 
   Climber climber;
+
+  Timer stopperTimer = new Timer();
+  double stopDelay = 0.5;
+
   /** Creates a new Climb. */
   public Climb(Climber m_climber) {
     addRequirements(m_climber);
@@ -28,15 +33,35 @@ public class Climb extends CommandBase {
   public void execute() {
     if (Climber.State == Climber.STATES.STOP) {
 
-      this.climber.stop();
+      climber.stop();
+      climber.hold();
+      stopperTimer.reset();
 
     } else if (Climber.State == Climber.STATES.ARMUP) {
 
-      this.climber.set(this.climber.armUpSpeed);
+      if(stopperTimer.get() > stopDelay){
+
+        climber.set(climber.armUpSpeed);
+
+      } else{
+
+        climber.release();
+        stopperTimer.start();
+        
+      }
 
     } else if (Climber.State == Climber.STATES.ARMDOWN) {
 
-      this.climber.set(this.climber.armDownSpeed);
+      if(stopperTimer.get() > stopDelay){
+
+        climber.set(climber.armDownSpeed);
+
+      } else{
+
+        climber.release();
+        stopperTimer.start();
+        
+      }
 
     }
   }

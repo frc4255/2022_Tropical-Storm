@@ -62,6 +62,14 @@ public final class Constants {
         
         public static final int motor = 12;
 
+        public static final int stopper = 1;
+
+    }
+
+    public static final class LEDs {
+
+        public static final int leds = 9;
+
     }
 
     public static final class DTProperties{
@@ -100,6 +108,6 @@ public final class Constants {
     public static final double THROUGH_BORE_ENCODER_REVS_PER_TICK = 1.0 / 2048.0;
 
     // 0 for red, 1 for blue
-    public static int allianceColor = 1;
+    public static int allianceColor = 0;
 
 }

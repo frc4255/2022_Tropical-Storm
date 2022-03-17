@@ -17,10 +17,12 @@ import frc.robot.autonomous.AutoMechManager;
 import frc.robot.commands.Climb;
 import frc.robot.commands.Drive;
 import frc.robot.commands.Funnel;
+import frc.robot.commands.ShineBrightLikeADiamond;
 import frc.robot.commands.Convey;
 import frc.robot.commands.Shoot;
 import frc.robot.commands.Suck;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.LEDs;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.MechManager.AUTO_STATES;
 import frc.robot.subsystems.Drivetrain;
@@ -46,6 +48,7 @@ public class RobotContainer {
   private final Hopper m_hopper = new Hopper();
   private final Conveyor m_conveyor = new Conveyor();
   private final Climber m_climber = new Climber();
+  private final LEDs m_leds = new LEDs();
 
   // Controllers
   public static final XboxController driveController = new XboxController(0);
@@ -75,6 +78,7 @@ public class RobotContainer {
     m_intake.setDefaultCommand(new Suck(m_intake));
     m_shooter.setDefaultCommand(new Shoot(m_shooter));
     m_climber.setDefaultCommand(new Climb(m_climber));
+    m_leds.setDefaultCommand(new ShineBrightLikeADiamond(m_leds));
   }
 
   /**

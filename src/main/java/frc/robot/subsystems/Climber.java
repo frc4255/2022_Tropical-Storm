@@ -7,6 +7,8 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -19,19 +21,32 @@ public class Climber extends SubsystemBase {
   public WPI_TalonFX motor;
   public double armUpSpeed = -0.8;
   public double armDownSpeed = 0.8;
+
+  public Solenoid stopper;
+  boolean holding = false;
   
   public Climber() {
-    this.motor = new WPI_TalonFX(Constants.Climber.motor);
+    motor = new WPI_TalonFX(Constants.Climber.motor);
 
-    this.motor.setNeutralMode(NeutralMode.Brake);
+    motor.setNeutralMode(NeutralMode.Brake);
+
+    stopper = new Solenoid(PneumaticsModuleType.REVPH, Constants.Climber.stopper);
   }
 
   public void set(double power) {
-    this.motor.set(power);
+    motor.set(power);
   }
 
   public void stop() {
-    this.set(0.0);
+    set(0.0);
+  }
+
+  public void hold(){
+    stopper.set(holding);
+  }
+
+  public void release(){
+    stopper.set(!holding);
   }
 
   @Override

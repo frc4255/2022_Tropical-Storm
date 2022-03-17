@@ -20,10 +20,12 @@ public class Convey extends CommandBase {
   Timer expelTimer = new Timer();
   Timer shootTimer = new Timer();
   Timer shiftTimer = new Timer();
+  Timer colorCheckTimer = new Timer();
 
   double expelLimit = 0.5;
   double shootLimit = 1.2;
   double shiftLimit = 0.5;
+  double colorCheckLimit = 0.5;
 
   INDEXING_SUBSTATES dummyLastSubstate = INDEXING_SUBSTATES.NONE;
 
@@ -56,7 +58,7 @@ public class Convey extends CommandBase {
 
         //System.out.println("Shooting or Expelling!");
 
-        if(expelTimer.get() > expelLimit || conveyor.hasCorrectBall() == 0){
+        if(expelTimer.get() > expelLimit || Conveyor.hasCorrectBall() == 0){
 
           Conveyor.Substate = INDEXING_SUBSTATES.NONE;
           expelTimer.reset();
@@ -76,20 +78,24 @@ public class Convey extends CommandBase {
         if(shiftTimer.get() > shiftLimit){
 
           Conveyor.Substate = INDEXING_SUBSTATES.NONE;
+          Hopper.State = Hopper.STATES.STOP;
           shiftTimer.reset();
           conveyor.stop();
 
         }
 
       //-----------------------------------------------------------------
-      } else if(conveyor.hasCorrectBall() == 1){
+      } else if(Conveyor.hasCorrectBall() == 1){
 
         //System.out.println("Has Incorrect Ball");
 
-        if(conveyor.hasSecondBall()){
+        if(Conveyor.hasSecondBall()){
+
+          // Don't mess with:
+          colorCheckTimer.reset();
 
           //conveyor.set(conveyor.lowerSpeed);
-          Intake.State = Intake.STATES.EXPEL;
+          //Intake.State = Intake.STATES.EXPEL;
           Hopper.State = Hopper.STATES.EXPEL;
           Conveyor.Substate = INDEXING_SUBSTATES.EXPELLING;
           expelTimer.start();
@@ -105,15 +111,28 @@ public class Convey extends CommandBase {
         }
         
       //-----------------------------------------------------------------
-      } else if(conveyor.hasCorrectBall() == 0){
+      } else if(Conveyor.hasCorrectBall() == 0){
 
         //System.out.println("Conveyor has correct or no ball!");
 
-        if(conveyor.hasSecondBall()){
+        if(Conveyor.hasSecondBall()){
 
-          conveyor.set(conveyor.liftSpeed);
-          Conveyor.Substate = INDEXING_SUBSTATES.SHIFTING;
-          shiftTimer.start();
+          System.out.println("Lifting!");
+
+          if(colorCheckTimer.get() > colorCheckLimit){
+
+            conveyor.set(conveyor.liftSpeed);
+            Conveyor.Substate = INDEXING_SUBSTATES.SHIFTING;
+            Hopper.State = Hopper.STATES.FUNNEL;
+            shiftTimer.start();
+            colorCheckTimer.reset();
+
+          } else{
+
+            colorCheckTimer.start();
+
+          }
+          
         
         //-----------------------------------------------------------------
         } else{
