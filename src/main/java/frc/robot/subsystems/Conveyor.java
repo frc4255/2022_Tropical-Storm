@@ -117,7 +117,11 @@ public class Conveyor extends SubsystemBase {
    */
   public static int ballsInConveyor(){
 
-    if(Substate == INDEXING_SUBSTATES.NONE && lastSubstate == INDEXING_SUBSTATES.SHIFTING){
+    if(Substate == INDEXING_SUBSTATES.SHIFTING){
+
+      return 2;
+
+    } else if(Substate == INDEXING_SUBSTATES.NONE && lastSubstate == INDEXING_SUBSTATES.SHIFTING){
 
       return 2;
 
@@ -148,7 +152,7 @@ public class Conveyor extends SubsystemBase {
     Shuphlebord.conveyorData.updateEntry("Correct Ball", hasCorrectBall());
     Shuphlebord.conveyorData.updateEntry("Second Ball", secondBall);
     Shuphlebord.conveyorData.updateEntry("Number of Balls", ballsInConveyor());
-    //System.out.println("STATE: " + State.toString() + ", SUBSTATE: " + Substate.toString());
+    System.out.print("STATE: " + State.toString() + ", SUBSTATE: " + Substate.toString());
     
   }
 

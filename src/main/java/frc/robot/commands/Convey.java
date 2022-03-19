@@ -164,8 +164,6 @@ public class Convey extends CommandBase {
 
       conveyor.set(conveyor.liftSpeed);
 
-      Conveyor.Substate = INDEXING_SUBSTATES.NONE;
-
     }
 
     if(Conveyor.State != Conveyor.STATES.INDEX){
@@ -182,6 +180,8 @@ public class Convey extends CommandBase {
     dummyLastSubstate = Conveyor.Substate;
 
     conveyor.displayConveyorValues();
+
+    System.out.println(", DUMMY: " + dummyLastSubstate.toString());
 
   }
 
