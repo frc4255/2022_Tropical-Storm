@@ -21,11 +21,13 @@ public class Convey extends CommandBase {
   Timer shootTimer = new Timer();
   Timer shiftTimer = new Timer();
   Timer colorCheckTimer = new Timer();
+  Timer secPosTimer = new Timer();
 
   double expelLimit = 0.5;
   double shootLimit = 1.2;
   double shiftLimit = 0.5;
   double colorCheckLimit = 0.5;
+  double secPosLimit = 0.4;
 
   INDEXING_SUBSTATES dummyLastSubstate = INDEXING_SUBSTATES.NONE;
 
@@ -122,10 +124,21 @@ public class Convey extends CommandBase {
           if(colorCheckTimer.get() > colorCheckLimit){
 
             conveyor.set(conveyor.liftSpeed);
-            Conveyor.Substate = INDEXING_SUBSTATES.SHIFTING;
-            Hopper.State = Hopper.STATES.FUNNEL;
-            shiftTimer.start();
-            colorCheckTimer.reset();
+
+            if(secPosTimer.get() > secPosLimit){
+
+              Conveyor.Substate = INDEXING_SUBSTATES.SHIFTING;
+              Hopper.State = Hopper.STATES.FUNNEL;
+              secPosTimer.reset();
+              shiftTimer.start();
+              colorCheckTimer.reset();
+
+            } else{
+
+              secPosTimer.start();
+            
+            }
+            
 
           } else{
 

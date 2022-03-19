@@ -11,7 +11,7 @@ import frc.robot.Constants;
 
 public class Hopper extends SubsystemBase {
   
-  public static enum STATES {FUNNEL, EXPEL, STOP};
+  public static enum STATES {FUNNEL, POST_FUNNEL, EXPEL, STOP};
   
   public static STATES State = STATES.STOP;
 

@@ -20,7 +20,7 @@ public class Drive extends CommandBase {
 
   Drivetrain drivetrain;
 
-  SlewRateLimiter filter = new SlewRateLimiter(0.6);
+  SlewRateLimiter filter = new SlewRateLimiter(1.2);
 
   SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(DTProperties.ksVolts, DTProperties.kvVoltSecondsPerMeter,
                                                                   DTProperties.kaVoltSecondsSquaredPerMeter);

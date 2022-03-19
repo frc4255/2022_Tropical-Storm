@@ -5,7 +5,6 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Conveyor;
 import frc.robot.subsystems.Intake;
 
 public class Suck extends CommandBase {
@@ -33,7 +32,7 @@ public class Suck extends CommandBase {
       this.intake.stop();
       this.intake.setArm(this.intake.in);
 
-    } else if (Intake.State == Intake.STATES.INTAKE && Conveyor.ballsInConveyor() != 2) {
+    } else if (Intake.State == Intake.STATES.INTAKE) {
 
       this.intake.set(this.intake.intakeSpeed);
       this.intake.setArm(this.intake.out);

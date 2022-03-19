@@ -4,6 +4,7 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Hopper;
 
@@ -11,6 +12,10 @@ public class Funnel extends CommandBase {
   @SuppressWarnings({ "PMD.UnusedPrivateField", "PMD.SingularField" })
 
   Hopper hopper;
+
+  Timer funnelTimer = new Timer();
+
+  double funnelDelay = 2.0;
 
   /** Creates a new Funnel. */
   public Funnel(Hopper m_hopper) {
@@ -29,15 +34,36 @@ public class Funnel extends CommandBase {
 
     if (Hopper.State == Hopper.STATES.STOP) {
 
-      this.hopper.stop();
+      hopper.stop();
 
+    } else if(Hopper.State == Hopper.STATES.POST_FUNNEL){
+
+      if(funnelTimer.get() > funnelDelay){
+
+        hopper.stop();
+        funnelTimer.reset();
+        Hopper.State = Hopper.STATES.STOP;
+
+      } else{
+
+        hopper.set(hopper.funnelSpeed);
+        funnelTimer.start();
+        
+      }
+    
     } else if (Hopper.State == Hopper.STATES.FUNNEL) {
 
-      this.hopper.set(this.hopper.funnelSpeed);
+      hopper.set(hopper.funnelSpeed);
 
     } else if (Hopper.State == Hopper.STATES.EXPEL) {
 
-      this.hopper.set(this.hopper.expelSpeed);
+      hopper.set(this.hopper.expelSpeed);
+
+    }
+
+    if(Hopper.State != Hopper.STATES.POST_FUNNEL){
+
+      funnelTimer.reset();
 
     }
   }

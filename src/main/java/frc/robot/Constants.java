@@ -79,9 +79,9 @@ public final class Constants {
         // for *your* robot's drive.
         // The Robot Characterization Toolsuite provides a convenient tool for obtaining these
         // values for your robot.
-        public static final double ksVolts = 0.67808;
-        public static final double kvVoltSecondsPerMeter = 2.2606;
-        public static final double kaVoltSecondsSquaredPerMeter = 0.17798;
+        public static final double ksVolts = 0.68061;// 0.67808;
+        public static final double kvVoltSecondsPerMeter = 0.74208;// 2.2606;
+        public static final double kaVoltSecondsSquaredPerMeter = 0.058056;//0.17798;
 
         // Example value only - as above, this must be tuned for your drive!
         public static final double kPDriveVel = 2.6447;
@@ -108,6 +108,6 @@ public final class Constants {
     public static final double THROUGH_BORE_ENCODER_REVS_PER_TICK = 1.0 / 2048.0;
 
     // 0 for red, 1 for blue
-    public static int allianceColor = 0;
+    public static int allianceColor = 1;
 
 }
