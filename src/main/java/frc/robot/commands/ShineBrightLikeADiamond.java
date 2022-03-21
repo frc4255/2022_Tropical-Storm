@@ -28,7 +28,7 @@ public class ShineBrightLikeADiamond extends CommandBase {
   @Override
   public void execute() {
 
-    leds.set(LEDs.STATES[Conveyor.ballsInConveyor()]);
+    leds.set(LEDs.STATES[Conveyor.ballsInConveyor]);
 
   }
 

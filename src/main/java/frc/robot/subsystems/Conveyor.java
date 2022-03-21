@@ -9,7 +9,6 @@ import com.revrobotics.ColorSensorV3;
 
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.I2C;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -19,12 +18,10 @@ public class Conveyor extends SubsystemBase {
 
     
   public static enum STATES {INDEX, FEED, STOP};
-  public static enum INDEXING_SUBSTATES {NONE, SHOOTING, EXPELLING, SHIFTING}
+  public static enum SUBSTATES {IDLE, MISFIRE, VOMIT, STORE, LOAD}
   
   public static STATES State = STATES.STOP;
-  public static INDEXING_SUBSTATES Substate = INDEXING_SUBSTATES.NONE;
-
-  public static INDEXING_SUBSTATES lastSubstate = INDEXING_SUBSTATES.NONE;
+  public static SUBSTATES Substate = SUBSTATES.IDLE;
 
   public WPI_TalonFX motor;
   public double liftSpeed = 0.26;
@@ -34,11 +31,9 @@ public class Conveyor extends SubsystemBase {
 
   private static ColorSensorV3 colorSensor;
 
-  static AnalogInput IRSensor = new AnalogInput(0); 
+  static AnalogInput IRSensor = new AnalogInput(0);
 
-  static Timer colorCheckTimer = new Timer();
-
-  static double colorCheckLimit = 0.45;
+  public static int ballsInConveyor = 0;
 
   /** Creates a new Conveyor. */
   public Conveyor() {
@@ -94,46 +89,26 @@ public class Conveyor extends SubsystemBase {
     Color color = colorSensor.getColor();
     int proximity = colorSensor.getProximity();
     int proximityThreshold = 80;
-    double blueThreshold = 0.13;
-    double redThreshold = 0.2;
+    double blueThreshold = 0.35;
+    double redThreshold = 0.35;
 
     if(proximity > proximityThreshold){
  
-      if(color.red > color.blue + redThreshold){
+      if(color.red > redThreshold){
 
         code = Constants.allianceColor == 0 ? 0 : 1;
 
-      } else if(color.blue > color.red + blueThreshold){
+      } else if(color.blue > blueThreshold){
 
         code = Constants.allianceColor == 0 ? 1 : 0;
 
       }
-    } else{
 
-      code = 2;
-
-    }
-
-    return code;
-  }
-
-  /**
-   * @return Number of correct balls in the conveyor
-   */
-  public static int ballsInConveyor(){
-
-    if(State == STATES.INDEX && (Substate == INDEXING_SUBSTATES.SHIFTING || lastSubstate == INDEXING_SUBSTATES.SHIFTING)){
-
-      return 2;
-
-    } else if((hasSecondBall() && hasCorrectBall() != 0) || (!hasSecondBall() && hasCorrectBall() == 0)){
-
-      return 1;
+      return code;
 
     }
 
-    return 0;
-
+    return 2;
   }
   
 
@@ -149,7 +124,7 @@ public class Conveyor extends SubsystemBase {
     Shuphlebord.conveyorData.updateEntry("Proximity", proximity);
     Shuphlebord.conveyorData.updateEntry("Correct Ball", hasCorrectBall());
     Shuphlebord.conveyorData.updateEntry("Second Ball", secondBall);
-    Shuphlebord.conveyorData.updateEntry("Number of Balls", ballsInConveyor());
+    Shuphlebord.conveyorData.updateEntry("Number of Balls", ballsInConveyor);
     System.out.print("STATE: " + State.toString() + ", SUBSTATE: " + Substate.toString());
     
   }
