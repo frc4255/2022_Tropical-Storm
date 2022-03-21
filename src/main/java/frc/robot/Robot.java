@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.autonomous.AutoMechManager;
+import frc.robot.subsystems.Conveyor;
 import frc.robot.subsystems.MechManager.AUTO_STATES;
 
 /**
@@ -130,6 +131,7 @@ public class Robot extends TimedRobot {
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
     // this line or comment it out.
+    Conveyor.ballsInConveyor = 0;
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
       new AutoMechManager(AUTO_STATES.DISABLE_INTAKE).schedule();;

@@ -5,7 +5,10 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystems.Conveyor;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.MechManager;
+import frc.robot.subsystems.MechManager.AUTO_STATES;
 
 public class Suck extends CommandBase {
   /** Creates a new Suck. */
@@ -29,18 +32,25 @@ public class Suck extends CommandBase {
 
     if (Intake.State == Intake.STATES.STOP) {
 
-      this.intake.stop();
-      this.intake.setArm(this.intake.in);
+      intake.stop();
+      intake.setArm(intake.in);
 
     } else if (Intake.State == Intake.STATES.INTAKE) {
 
-      this.intake.set(this.intake.intakeSpeed);
-      this.intake.setArm(this.intake.out);
+      if(MechManager.State == AUTO_STATES.ENABLE_INTAKE || (Conveyor.ballsInConveyor != 2)){
+        intake.set(intake.intakeSpeed);
+        intake.setArm(intake.out);
+        System.out.println("  Intake Open!  ");
+      } else{
+        intake.stop();
+        intake.setArm(intake.in);
+        System.out.println("  Intake Blocking!  ");
+      }
 
     } else if (Intake.State == Intake.STATES.EXPEL) {
 
-      this.intake.set(this.intake.expelSpeed);
-      this.intake.setArm(this.intake.out);
+      intake.set(intake.expelSpeed);
+      intake.setArm(intake.out);
 
     }
   }

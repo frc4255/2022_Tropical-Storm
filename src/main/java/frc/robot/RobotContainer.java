@@ -164,14 +164,16 @@ public class RobotContainer {
                   ball2and3).andThen(
                   new AutoMechManager(AUTO_STATES.INTAKE)).andThen(
                   shoot2).andThen(
-                  new AutoMechManager(AUTO_STATES.SHOOT)).andThen(new AutoMechManager(AUTO_STATES.DISABLE_INTAKE));
+                  new AutoMechManager(AUTO_STATES.DISABLE_INTAKE)).andThen(
+                  new AutoMechManager(AUTO_STATES.SHOOT));
 
 
     Command twoBall = new AutoMechManager(AUTO_STATES.ENABLE_INTAKE).andThen(
                       ball1_TWO_BALL).andThen(
                       new AutoMechManager(AUTO_STATES.INTAKE)).andThen(
                       shoot1_TWO_BALL).andThen(
-                      new AutoMechManager(AUTO_STATES.SHOOT)).andThen(new AutoMechManager(AUTO_STATES.DISABLE_INTAKE));
+                      new AutoMechManager(AUTO_STATES.DISABLE_INTAKE)).andThen(
+                      new AutoMechManager(AUTO_STATES.SHOOT));
 
 
     // ONLY TOUCH THIS

@@ -20,7 +20,7 @@ public class Conveyor extends SubsystemBase {
   public static enum STATES {INDEX, FEED, STOP};
   public static enum SUBSTATES {IDLE, MISFIRE, VOMIT, STORE, LOAD}
   
-  public static STATES State = STATES.STOP;
+  public static STATES State = STATES.INDEX;
   public static SUBSTATES Substate = SUBSTATES.IDLE;
 
   public WPI_TalonFX motor;
@@ -89,8 +89,8 @@ public class Conveyor extends SubsystemBase {
     Color color = colorSensor.getColor();
     int proximity = colorSensor.getProximity();
     int proximityThreshold = 80;
-    double blueThreshold = 0.35;
-    double redThreshold = 0.35;
+    double blueThreshold = 0.3;
+    double redThreshold = 0.4;
 
     if(proximity > proximityThreshold){
  
@@ -125,7 +125,7 @@ public class Conveyor extends SubsystemBase {
     Shuphlebord.conveyorData.updateEntry("Correct Ball", hasCorrectBall());
     Shuphlebord.conveyorData.updateEntry("Second Ball", secondBall);
     Shuphlebord.conveyorData.updateEntry("Number of Balls", ballsInConveyor);
-    System.out.print("STATE: " + State.toString() + ", SUBSTATE: " + Substate.toString());
+    System.out.print("SUBSTATE: " + Substate.toString() + ", BALLS: " + ballsInConveyor);
     
   }
 

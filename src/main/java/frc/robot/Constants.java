@@ -18,7 +18,7 @@ public final class Constants {
 
     // ALLIANCE CHOOSER
     // 0 for red, 1 for blue
-    public static int allianceColor = 0;
+    public static int allianceColor = 1;
 
 
     // MECHANISM CONSTANTS

@@ -21,9 +21,9 @@ public class Convey extends CommandBase {
   Timer VOMIT_TIMER = new Timer();
   Timer MISFIRE_TIMER = new Timer();
 
-  double LOAD_TIME = 0.0;
-  double VOMIT_TIME = 0.0;
-  double MISFIRE_TIME = 0.0;
+  double LOAD_TIME = 0.3;
+  double VOMIT_TIME = 1.0;
+  double MISFIRE_TIME = 0.5;
 
   /** Creates a new Lift. */
   public Convey(Conveyor m_conveyor) {
@@ -76,50 +76,61 @@ public class Convey extends CommandBase {
 
         if(SB && !CB){
           Conveyor.Substate = SUBSTATES.IDLE;
+          Hopper.State = Hopper.STATES.STOP;
+        } else{
+          Hopper.State = Hopper.STATES.FUNNEL;
+          conveyor.set(conveyor.liftSpeed);
+          Conveyor.ballsInConveyor = 1;
         }
-        Hopper.State = Hopper.STATES.FUNNEL;
-        conveyor.set(conveyor.liftSpeed);
-        Conveyor.ballsInConveyor = 1;
 
       } else if(Conveyor.Substate == SUBSTATES.LOAD){
 
         if(LOAD_TIMER.get() > LOAD_TIME){
           Conveyor.Substate = SUBSTATES.IDLE;
+          Hopper.State = Hopper.STATES.STOP;
         } else{
+          Hopper.State = Hopper.STATES.FUNNEL;
+          conveyor.set(conveyor.liftSpeed);
+          Conveyor.ballsInConveyor = 2;
           LOAD_TIMER.start();
         }
-        Hopper.State = Hopper.STATES.FUNNEL;
-        conveyor.set(conveyor.liftSpeed);
-        Conveyor.ballsInConveyor = 2;
 
       } else if(Conveyor.Substate == SUBSTATES.MISFIRE){
 
         if(MISFIRE_TIMER.get() > MISFIRE_TIME){
           Conveyor.Substate = SUBSTATES.IDLE;
+          Hopper.State = Hopper.STATES.STOP;
+          Shooter.State = Shooter.STATES.STOP;
         } else{
+          conveyor.set(conveyor.liftSpeed * 3.0);
+          Shooter.State = Shooter.STATES.EXPEL;
+          Hopper.State = Hopper.STATES.FUNNEL;
+          Conveyor.ballsInConveyor = 0;
           MISFIRE_TIMER.start();
         }
-        conveyor.set(conveyor.liftSpeed);
-        Shooter.State = Shooter.STATES.EXPEL;
-        Hopper.State = Hopper.STATES.FUNNEL;
 
       } else if(Conveyor.Substate == SUBSTATES.VOMIT){
 
-        if(CB && VOMIT_TIMER.get() > VOMIT_TIME){
+        if(VOMIT_TIMER.get() > VOMIT_TIME){
           Conveyor.Substate = SUBSTATES.IDLE;
+          Hopper.State = Hopper.STATES.STOP;
+          Intake.State = Intake.STATES.STOP;
+        } else if(CB){
+          conveyor.set(0.0);
         } else{
+          conveyor.set(conveyor.lowerSpeed);
+          Hopper.State = Hopper.STATES.EXPEL;
+          Intake.State = Intake.STATES.EXPEL;
+          Conveyor.ballsInConveyor = 1;
           VOMIT_TIMER.start();
         }
-        conveyor.set(conveyor.lowerSpeed);
-        Hopper.State = Hopper.STATES.EXPEL;
-        Intake.State = Intake.STATES.EXPEL;
-        Conveyor.ballsInConveyor = 1;
-
+      
       }
     } else if(Conveyor.State == Conveyor.STATES.FEED){
       conveyor.set(conveyor.liftSpeed);
       
       Conveyor.Substate = SUBSTATES.IDLE;
+      Conveyor.ballsInConveyor = 0;
       LOAD_TIMER.reset();
       VOMIT_TIMER.reset();
       MISFIRE_TIMER.reset();

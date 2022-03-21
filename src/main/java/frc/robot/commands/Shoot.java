@@ -25,7 +25,6 @@ public class Shoot extends CommandBase {
   double kp = 0.4;
   double ki = 0.1;
   double kd = 0.014;
-  double setpoint = Shooter.setpoint;
   double power = 0.0;
   double tolerance = 50.0;
   PIDController controller = new PIDController(kp, ki, kd);
@@ -49,11 +48,6 @@ public class Shoot extends CommandBase {
   @Override
   public void initialize() {
 
-    shooterData.updateEntry("kP", kp);
-    shooterData.updateEntry("kI", ki);
-    shooterData.updateEntry("kD", kd);
-    shooterData.updateEntry("Setpoint", setpoint);
-
     controller.setIntegratorRange(-1000.0, 0);
 
   }
@@ -61,23 +55,6 @@ public class Shoot extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-
-    setpoint = Shooter.setpoint;
-    
-    double adjustedkp = shooterData.getEntryData("kP").getDouble();
-    double adjustedki = shooterData.getEntryData("kI").getDouble();
-    double adjustedkd = shooterData.getEntryData("kD").getDouble();
-    double adjustedSetpoint = shooterData.getEntryData("Setpoint").getDouble();
-
-    if(kd != adjustedkp || ki != adjustedki || kd != adjustedkd || setpoint != adjustedSetpoint){
-      kp = adjustedkp;
-      ki = adjustedki;
-      kd = adjustedkd;
-
-      controller.setPID(kp, ki, kd);
-      Shooter.setpoint = adjustedSetpoint;
-    }
-
 
     if(Shooter.State == Shooter.STATES.SHOOT) {
 
@@ -89,18 +66,18 @@ public class Shoot extends CommandBase {
       double rps = shooter.getRPM() / 60.0;
       double power = feedforward.calculate(velocitySetpoint) + controller.calculate(rps);
       shooterData.updateEntry("RPM", rps * 60.0);
-      shooterData.updateEntry("Setpoint", setpoint);
+      shooterData.updateEntry("Setpoint", Shooter.setpoint);
       shooterData.updateEntry("Power", power);
-      shooterData.updateEntry("Error", setpoint - rps * 60.0);
+      shooterData.updateEntry("Error", Shooter.setpoint - rps * 60.0);
 
       shooter.setVoltage(power);
 
-      if(Math.abs(shooter.getRPM() - setpoint) <= tolerance && toleranceTimer.get() > 0.1){
+      if(Math.abs(shooter.getRPM() - Shooter.setpoint) <= tolerance && toleranceTimer.get() > 0.1){
 
         Conveyor.State = Conveyor.STATES.FEED;
         Hopper.State = Hopper.STATES.FUNNEL;
 
-      } else if(Math.abs(shooter.getRPM() - setpoint) <= tolerance){
+      } else if(Math.abs(shooter.getRPM() - Shooter.setpoint) <= tolerance){
         
         toleranceTimer.start();
 
@@ -122,7 +99,7 @@ public class Shoot extends CommandBase {
       double rps = shooter.getRPM() / 60; 
       double power = feedforward.calculate(velocitySetpoint) + controller.calculate(rps);
       shooterData.updateEntry("RPM", rps * 60.0);
-      shooterData.updateEntry("Setpoint", setpoint);
+      shooterData.updateEntry("Setpoint", Shooter.expelSetpoint);
       shooterData.updateEntry("Power", power);
 
       shooter.setVoltage(power);
