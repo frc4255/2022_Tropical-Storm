@@ -14,7 +14,7 @@ import frc.robot.Constants;
 
 public class Climber extends SubsystemBase {
   /** Creates a new Climber. */
-  public static enum STATES {ARMUP, ARMDOWN, STOP};
+  public static enum STATES {ARMUP, ARMDOWN, STOP, RELEASE};
   
   public static STATES State = STATES.STOP;
 

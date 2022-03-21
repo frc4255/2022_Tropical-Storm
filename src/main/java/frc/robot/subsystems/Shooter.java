@@ -24,7 +24,9 @@ public class Shooter extends SubsystemBase {
   TalonFXEncoder leftEncoder;
   TalonFXEncoder rightEncoder;
 
-  public static double shootSetpoint = 1750.0;
+  public static double shootSetpoint = 1700.0;
+  public static double hailMarySetpoint = 1900.0;
+  public static double setpoint = shootSetpoint;
   public static double expelSetpoint = 600.0;
 
   public Shooter() {

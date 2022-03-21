@@ -14,7 +14,7 @@ public class Climb extends CommandBase {
   Climber climber;
 
   Timer stopperTimer = new Timer();
-  double stopDelay = 0.5;
+  double stopDelay = 0.25;
 
   /** Creates a new Climb. */
   public Climb(Climber m_climber) {
@@ -62,6 +62,10 @@ public class Climb extends CommandBase {
         stopperTimer.start();
         
       }
+
+    } else if(Climber.State == Climber.STATES.RELEASE){
+
+      climber.release();
 
     }
   }

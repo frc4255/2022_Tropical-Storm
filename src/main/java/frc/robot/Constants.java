@@ -16,6 +16,13 @@ import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
  */
 public final class Constants {
 
+    // ALLIANCE CHOOSER
+    // 0 for red, 1 for blue
+    public static int allianceColor = 0;
+
+
+    // MECHANISM CONSTANTS
+
     public static final class Drivetrain{
 
         public static final int leftMotor0 = 0;
@@ -106,8 +113,4 @@ public final class Constants {
     }
 
     public static final double THROUGH_BORE_ENCODER_REVS_PER_TICK = 1.0 / 2048.0;
-
-    // 0 for red, 1 for blue
-    public static int allianceColor = 1;
-
 }

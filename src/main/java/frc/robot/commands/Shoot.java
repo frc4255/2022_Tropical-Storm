@@ -25,7 +25,7 @@ public class Shoot extends CommandBase {
   double kp = 0.4;
   double ki = 0.1;
   double kd = 0.014;
-  double setpoint = Shooter.shootSetpoint;
+  double setpoint = Shooter.setpoint;
   double power = 0.0;
   double tolerance = 50.0;
   PIDController controller = new PIDController(kp, ki, kd);
@@ -62,7 +62,7 @@ public class Shoot extends CommandBase {
   @Override
   public void execute() {
 
-    setpoint = Shooter.shootSetpoint;
+    setpoint = Shooter.setpoint;
     
     double adjustedkp = shooterData.getEntryData("kP").getDouble();
     double adjustedki = shooterData.getEntryData("kI").getDouble();
@@ -75,13 +75,13 @@ public class Shoot extends CommandBase {
       kd = adjustedkd;
 
       controller.setPID(kp, ki, kd);
-      Shooter.shootSetpoint = adjustedSetpoint;
+      Shooter.setpoint = adjustedSetpoint;
     }
 
 
     if(Shooter.State == Shooter.STATES.SHOOT) {
 
-      double velocitySetpoint = Shooter.shootSetpoint;
+      double velocitySetpoint = Shooter.setpoint;
       velocitySetpoint /= 60.0; //In rotations per second
 
       controller.setSetpoint(velocitySetpoint);

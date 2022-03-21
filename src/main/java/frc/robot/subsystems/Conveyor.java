@@ -9,6 +9,7 @@ import com.revrobotics.ColorSensorV3;
 
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -20,20 +21,24 @@ public class Conveyor extends SubsystemBase {
   public static enum STATES {INDEX, FEED, STOP};
   public static enum INDEXING_SUBSTATES {NONE, SHOOTING, EXPELLING, SHIFTING}
   
-  public static STATES State = STATES.INDEX;
+  public static STATES State = STATES.STOP;
   public static INDEXING_SUBSTATES Substate = INDEXING_SUBSTATES.NONE;
 
   public static INDEXING_SUBSTATES lastSubstate = INDEXING_SUBSTATES.NONE;
 
   public WPI_TalonFX motor;
-  public double liftSpeed = 0.3;
-  public double lowerSpeed = -0.3;
+  public double liftSpeed = 0.26;
+  public double lowerSpeed = -0.26;
 
   private final I2C.Port i2cPort = I2C.Port.kOnboard;
 
   private static ColorSensorV3 colorSensor;
 
   static AnalogInput IRSensor = new AnalogInput(0); 
+
+  static Timer colorCheckTimer = new Timer();
+
+  static double colorCheckLimit = 0.45;
 
   /** Creates a new Conveyor. */
   public Conveyor() {
@@ -117,25 +122,18 @@ public class Conveyor extends SubsystemBase {
    */
   public static int ballsInConveyor(){
 
-    if(Substate == INDEXING_SUBSTATES.SHIFTING){
+    if(State == STATES.INDEX && (Substate == INDEXING_SUBSTATES.SHIFTING || lastSubstate == INDEXING_SUBSTATES.SHIFTING)){
 
       return 2;
 
-    } else if(Substate == INDEXING_SUBSTATES.NONE && lastSubstate == INDEXING_SUBSTATES.SHIFTING){
-
-      return 2;
-
-    } else if(hasSecondBall() && hasCorrectBall() == 0){
-
-      return 2;
-
-    } else if(hasSecondBall() || hasCorrectBall() == 0){
+    } else if((hasSecondBall() && hasCorrectBall() != 0) || (!hasSecondBall() && hasCorrectBall() == 0)){
 
       return 1;
 
     }
 
     return 0;
+
   }
   
 

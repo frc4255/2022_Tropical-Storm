@@ -15,7 +15,7 @@ public class Funnel extends CommandBase {
 
   Timer funnelTimer = new Timer();
 
-  double funnelDelay = 2.0;
+  double funnelDelay = 4.0;
 
   /** Creates a new Funnel. */
   public Funnel(Hopper m_hopper) {

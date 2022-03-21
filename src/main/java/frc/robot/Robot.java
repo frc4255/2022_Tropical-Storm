@@ -30,15 +30,38 @@ public class Robot extends TimedRobot {
   private RobotContainer m_robotContainer;
 
   // PATHS FOR AUTO
-  static String ball1Dir = "output/Ball1.wpilib.json";
-  static String shoot1Dir = "output/Shoot1.wpilib.json";
-  static String ball2and3Dir = "output/Ball2and3.wpilib.json";
-  static String shoot2Dir = "output/Shoot2.wpilib.json";
+  // 4 BALL PATHS
 
-  public static Trajectory ball1Trajectory = new Trajectory();
-  public static Trajectory shoot1Trajectory = new Trajectory();
-  public static Trajectory ball2and3Trajectory = new Trajectory();
-  public static Trajectory shoot2Trajectory = new Trajectory();
+  public static class FourBallAuto{
+
+    // 4 BALL DIRECTORIES
+    static String ball1Dir = "output/Ball1.wpilib.json";
+    static String shoot1Dir = "output/Shoot1.wpilib.json";
+    static String ball2and3Dir = "output/Ball2and3.wpilib.json";
+    static String shoot2Dir = "output/Shoot2.wpilib.json";
+
+
+    // 4 BALL TRAJECTORIES
+    public static Trajectory ball1Trajectory = new Trajectory();
+    public static Trajectory shoot1Trajectory = new Trajectory();
+    public static Trajectory ball2and3Trajectory = new Trajectory();
+    public static Trajectory shoot2Trajectory = new Trajectory();
+  }
+
+
+  public static class TwoBallAuto{
+
+    // 2 BALL PATHS
+    static String ball1Dir = "output/Ball1_TWO_BALL.wpilib.json";
+    static String shoot1Dir = "output/Shoot1_TWO_BALL.wpilib.json";
+
+
+    // 2 BALL TRAJECTORIES
+    public static Trajectory ball1Trajectory = new Trajectory();
+    public static Trajectory shoot1Trajectory = new Trajectory();
+
+  }
+
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -48,10 +71,16 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
-    ball1Trajectory = loadTrajectories(ball1Dir);
-    shoot1Trajectory = loadTrajectories(shoot1Dir);
-    ball2and3Trajectory = loadTrajectories(ball2and3Dir);
-    shoot2Trajectory = loadTrajectories(shoot2Dir);
+
+    // 4 BALL TRAJECTORIES
+    FourBallAuto.ball1Trajectory = loadTrajectories(FourBallAuto.ball1Dir);
+    FourBallAuto.shoot1Trajectory = loadTrajectories(FourBallAuto.shoot1Dir);
+    FourBallAuto.ball2and3Trajectory = loadTrajectories(FourBallAuto.ball2and3Dir);
+    FourBallAuto.shoot2Trajectory = loadTrajectories(FourBallAuto.shoot2Dir);
+
+    // 2 BALL TRAJECTORIES
+    TwoBallAuto.ball1Trajectory = loadTrajectories(TwoBallAuto.ball1Dir);
+    TwoBallAuto.shoot1Trajectory = loadTrajectories(TwoBallAuto.shoot1Dir);
 
     m_robotContainer = new RobotContainer();
     LiveWindow.disableAllTelemetry();
