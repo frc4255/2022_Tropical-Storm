@@ -11,6 +11,8 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DTProperties;
 import frc.robot.Robot.FourBallAuto;
@@ -19,10 +21,12 @@ import frc.robot.autonomous.AutoMechManager;
 import frc.robot.commands.Climb;
 import frc.robot.commands.Drive;
 import frc.robot.commands.Funnel;
+import frc.robot.commands.ShineBrightLikeADiamond;
 import frc.robot.commands.Convey;
 import frc.robot.commands.Shoot;
 import frc.robot.commands.Suck;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.LEDs;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.MechManager.AUTO_STATES;
 import frc.robot.subsystems.Drivetrain;
@@ -48,7 +52,7 @@ public class RobotContainer {
   private final Hopper m_hopper = new Hopper();
   private final Conveyor m_conveyor = new Conveyor();
   private final Climber m_climber = new Climber();
-  // private final LEDs m_leds = new LEDs();
+  private final LEDs m_leds = new LEDs();
 
   // Controllers
   public static final XboxController driveController = new XboxController(0);
@@ -67,6 +71,9 @@ public class RobotContainer {
   public final JoystickButton armDownButton = new JoystickButton(mechController, Button.kLeftBumper.value);
   public final JoystickButton releaseStopperButton = new JoystickButton(mechController, Button.kB.value);
 
+  // AUTO CHOOSER
+
+  public SendableChooser <Integer> autoChooser;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -80,7 +87,21 @@ public class RobotContainer {
     m_intake.setDefaultCommand(new Suck(m_intake));
     m_shooter.setDefaultCommand(new Shoot(m_shooter));
     m_climber.setDefaultCommand(new Climb(m_climber));
-    //m_leds.setDefaultCommand(new ShineBrightLikeADiamond(m_leds));
+    m_leds.setDefaultCommand(new ShineBrightLikeADiamond(m_leds));
+
+
+    // AUTO STUFF
+
+    Integer fB = 0;
+    Integer tB = 1;
+    Integer nB = 2;
+
+    autoChooser = new SendableChooser<>();
+    autoChooser.setDefaultOption("4 Ball", fB);
+    autoChooser.addOption("2 Ball", tB);
+    autoChooser.addOption("Do Nothing", nB);
+
+    SmartDashboard.putData(autoChooser);
   }
 
   /**
@@ -143,7 +164,6 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
 
     // CREATE PATHS
-
     // 4 BALL PATHS
     RamseteCommand ball1 = getRamseteCommand(FourBallAuto.ball1Trajectory);
     RamseteCommand shoot1 = getRamseteCommand(FourBallAuto.shoot1Trajectory);
@@ -175,15 +195,10 @@ public class RobotContainer {
                       new AutoMechManager(AUTO_STATES.DISABLE_INTAKE)).andThen(
                       new AutoMechManager(AUTO_STATES.SHOOT));
 
+    // GET SELECTED AUTO
+    int choice = autoChooser.getSelected().intValue();
 
-    // ONLY TOUCH THIS
-    // 0 for 4 ball, 1 for 2 ball
-    int auto = 0;
-    
-
-    // PATH CHOOSER
-    
-    if(auto == 0){
+    if(choice == 0){
 
       // 4 BALL
 
@@ -191,8 +206,7 @@ public class RobotContainer {
       m_drivetrain.resetOdometry(FourBallAuto.ball1Trajectory.getInitialPose());
 
       return fourBall;
-
-    } else if(auto == 1){
+    } else if(choice == 1){
 
       // 2 BALL
 
@@ -200,9 +214,9 @@ public class RobotContainer {
       m_drivetrain.resetOdometry(TwoBallAuto.ball1Trajectory.getInitialPose());
 
       return twoBall;
+    } else{
 
+      return new InstantCommand();
     }
-
-    return new InstantCommand();
   }
 }

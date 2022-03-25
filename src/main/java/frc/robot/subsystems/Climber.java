@@ -22,6 +22,9 @@ public class Climber extends SubsystemBase {
   public double armUpSpeed = -0.8;
   public double armDownSpeed = 0.8;
 
+  public double max = 142502.0;
+  public double min = 0.0;
+
   public Solenoid stopper;
   boolean holding = false;
   
@@ -47,6 +50,14 @@ public class Climber extends SubsystemBase {
 
   public void release(){
     stopper.set(!holding);
+  }
+
+  public double readEncoder(){
+    return motor.getSelectedSensorPosition();
+  }
+
+  public void resetEncoder(){
+    motor.setSelectedSensorPosition(0.0);
   }
 
   @Override

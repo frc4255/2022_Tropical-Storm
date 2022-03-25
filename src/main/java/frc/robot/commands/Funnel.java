@@ -34,13 +34,9 @@ public class Funnel extends CommandBase {
 
     if (Hopper.State == Hopper.STATES.STOP) {
 
-      System.out.println(", Hopper Stopped!");
-
       hopper.stop();
 
     } else if(Hopper.State == Hopper.STATES.POST_FUNNEL){
-
-      System.out.println(", Hopper Post Funneling!");
 
       if(funnelTimer.get() > funnelDelay){
 
@@ -57,13 +53,9 @@ public class Funnel extends CommandBase {
     
     } else if (Hopper.State == Hopper.STATES.FUNNEL) {
 
-      System.out.println(", Hopper Funneling!");
-
       hopper.set(hopper.funnelSpeed);
 
     } else if (Hopper.State == Hopper.STATES.EXPEL) {
-
-      System.out.println(", Hopper Expelling!");
 
       hopper.set(this.hopper.expelSpeed);
 

@@ -27,7 +27,7 @@ public class Conveyor extends SubsystemBase {
   public double liftSpeed = 0.26;
   public double lowerSpeed = -0.26;
 
-  private final I2C.Port i2cPort = I2C.Port.kOnboard;
+  private final I2C.Port i2cPort = I2C.Port.kMXP;
 
   private static ColorSensorV3 colorSensor;
 
@@ -125,7 +125,7 @@ public class Conveyor extends SubsystemBase {
     Shuphlebord.conveyorData.updateEntry("Correct Ball", hasCorrectBall());
     Shuphlebord.conveyorData.updateEntry("Second Ball", secondBall);
     Shuphlebord.conveyorData.updateEntry("Number of Balls", ballsInConveyor);
-    System.out.print("SUBSTATE: " + Substate.toString() + ", BALLS: " + ballsInConveyor);
+    //System.out.print("SUBSTATE: " + Substate.toString() + ", BALLS: " + ballsInConveyor);
     
   }
 

@@ -7,6 +7,7 @@ package frc.robot;
 import java.io.IOException;
 import java.nio.file.Path;
 
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryUtil;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -73,6 +74,10 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
 
+    // CAMERA
+    CameraServer.startAutomaticCapture(0);
+    
+
     // 4 BALL TRAJECTORIES
     FourBallAuto.ball1Trajectory = loadTrajectories(FourBallAuto.ball1Dir);
     FourBallAuto.shoot1Trajectory = loadTrajectories(FourBallAuto.shoot1Dir);
@@ -113,6 +118,14 @@ public class Robot extends TimedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
+
+    if(DriverStation.getAlliance() == DriverStation.Alliance.Red){
+      Constants.allianceColor = 0;
+    } else if(DriverStation.getAlliance() == DriverStation.Alliance.Blue){
+      Constants.allianceColor = 1;
+    }
+    
+
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     // schedule the autonomous command (example)

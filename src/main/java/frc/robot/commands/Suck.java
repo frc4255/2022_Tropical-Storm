@@ -40,11 +40,9 @@ public class Suck extends CommandBase {
       if(MechManager.State == AUTO_STATES.ENABLE_INTAKE || (Conveyor.ballsInConveyor != 2)){
         intake.set(intake.intakeSpeed);
         intake.setArm(intake.out);
-        System.out.println("  Intake Open!  ");
       } else{
         intake.stop();
         intake.setArm(intake.in);
-        System.out.println("  Intake Blocking!  ");
       }
 
     } else if (Intake.State == Intake.STATES.EXPEL) {

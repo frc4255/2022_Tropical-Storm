@@ -95,7 +95,7 @@ public class LEDs extends SubsystemBase {
   public static double red = 0.61;
   //public static double red_orange = 0.63;
   //public static double orange = 0.65;
-  public static double gold = 0.67;
+  public static double gold = 0.65;
   //public static double yellow = 0.69;
   //public static double lawn_green = 0.71;
   //public static double lime = 0.73;

@@ -4,19 +4,25 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Conveyor;
 import frc.robot.subsystems.LEDs;
+import frc.robot.subsystems.Shooter;
 
 public class ShineBrightLikeADiamond extends CommandBase {
   /** Creates a new ShineBrightLikeADiamond. */
 
   LEDs leds;
 
+  Timer blinkTimer = new Timer();
+  double blinkTime = 0.1;
+
+  boolean blink = false;
+
   public ShineBrightLikeADiamond(LEDs m_leds) {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(m_leds);
-
     leds = m_leds;
   }
 
@@ -28,8 +34,25 @@ public class ShineBrightLikeADiamond extends CommandBase {
   @Override
   public void execute() {
 
-    leds.set(LEDs.STATES[Conveyor.ballsInConveyor]);
+    if(Shooter.State == Shooter.STATES.SHOOT || Shooter.State == Shooter.STATES.EXPEL){
 
+      if(blinkTimer.get() > blinkTime){
+        blink = !blink;
+        blinkTimer.reset();
+      } else{
+        blinkTimer.start();
+      }
+
+      if(blink){
+        leds.set(LEDs.STATES[Conveyor.ballsInConveyor]);
+      } else{
+        leds.set(0.99);
+      }
+
+    } else{
+      blinkTimer.reset();
+      leds.set(LEDs.STATES[Conveyor.ballsInConveyor]);
+    }
   }
 
   // Called once the command ends or is interrupted.
