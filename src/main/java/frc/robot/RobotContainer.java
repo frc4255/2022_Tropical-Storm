@@ -73,7 +73,7 @@ public class RobotContainer {
 
   // AUTO CHOOSER
 
-  public SendableChooser <Integer> autoChooser;
+  public SendableChooser <String> autoChooser;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -92,9 +92,9 @@ public class RobotContainer {
 
     // AUTO STUFF
 
-    Integer fB = 0;
-    Integer tB = 1;
-    Integer nB = 2;
+    String fB = "fourBall";
+    String tB = "twoBall";
+    String nB = "noBall";
 
     autoChooser = new SendableChooser<>();
     autoChooser.setDefaultOption("4 Ball", fB);
@@ -196,17 +196,25 @@ public class RobotContainer {
                       new AutoMechManager(AUTO_STATES.SHOOT));
 
     // GET SELECTED AUTO
-    int choice = autoChooser.getSelected().intValue();
 
-    if(choice == 0){
+    String choice;
+    
+    try{
+      choice = autoChooser.getSelected();
+    } catch(Exception e){
+      SmartDashboard.putString("Worked?", "Nah");
+      choice = "Didn't Choose";
+    }
 
+    if(choice == "fourBall"){
+    
       // 4 BALL
-
+    
       // Reset odometry to the starting pose of the trajectory.
       m_drivetrain.resetOdometry(FourBallAuto.ball1Trajectory.getInitialPose());
-
+    
       return fourBall;
-    } else if(choice == 1){
+    } else if(choice == "twoBall"){
 
       // 2 BALL
 
@@ -214,9 +222,21 @@ public class RobotContainer {
       m_drivetrain.resetOdometry(TwoBallAuto.ball1Trajectory.getInitialPose());
 
       return twoBall;
-    } else{
+    } else if(choice == "noBall"){
+
+      // DON'T MOVE
 
       return new InstantCommand();
+
+    } else{
+
+      // 4 BALL, AS FALL BACK OPTION
+
+      // Reset odometry to the starting pose of the trajectory.
+      m_drivetrain.resetOdometry(FourBallAuto.ball1Trajectory.getInitialPose());
+
+      return fourBall;
+
     }
   }
 }

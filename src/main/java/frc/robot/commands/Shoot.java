@@ -12,7 +12,9 @@ import frc.robot.Shuphlebord;
 import frc.robot.TabData;
 import frc.robot.subsystems.Conveyor;
 import frc.robot.subsystems.Hopper;
+import frc.robot.subsystems.MechManager;
 import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.MechManager.AUTO_STATES;
 
 public class Shoot extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
@@ -81,8 +83,13 @@ public class Shoot extends CommandBase {
         
         toleranceTimer.start();
 
-      } else{
+      }else{
 
+        if(MechManager.State != AUTO_STATES.SHOOT){
+
+          Conveyor.State = Conveyor.STATES.STOP;
+
+        }
         toleranceTimer.reset();
         
       }
