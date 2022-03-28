@@ -34,7 +34,7 @@ public class ShineBrightLikeADiamond extends CommandBase {
   @Override
   public void execute() {
 
-    if(Shooter.State == Shooter.STATES.SHOOT || Shooter.State == Shooter.STATES.EXPEL){
+    if(Shooter.State == Shooter.STATES.FENDER_SHOOT || Shooter.State == Shooter.STATES.EXPEL){
 
       if(blinkTimer.get() > blinkTime){
         blink = !blink;

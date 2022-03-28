@@ -4,6 +4,10 @@
 
 package frc.robot.subsystems;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
@@ -14,7 +18,7 @@ import frc.robot.wrappers.TalonFXEncoder;
 public class Shooter extends SubsystemBase {
   /** Creates a new Shooter. */
 
-  public static enum STATES {SHOOT, EXPEL, STOP};
+  public static enum STATES {FENDER_SHOOT, EXPEL, STOP, VISION_SHOOT};
 
   public static STATES State = STATES.STOP;
 
@@ -25,8 +29,6 @@ public class Shooter extends SubsystemBase {
   TalonFXEncoder rightEncoder;
 
   public static double shootSetpoint = 1700.0;
-  public static double hailMarySetpoint = 1900.0;
-  public static double setpoint = shootSetpoint;
   public static double expelSetpoint = 600.0;
 
   public Shooter() {
@@ -76,6 +78,53 @@ public class Shooter extends SubsystemBase {
 
     return rpm;
 
+  }
+
+  public double getTargetRPM(){
+
+    Map<Double, Double> rpms = new HashMap<>();
+
+    // Should be put as rpms.put(Distance in inches, rpm)
+    // This is the data table for the distance v. rpm data
+    rpms.put(0.0, 150.0);
+
+
+    // Linear Interpolation Stuff
+    Double[] distances = rpms.keySet().toArray(Double[]::new);
+
+    Arrays.sort(distances);
+
+    // Distance from target
+    double dist = Limelight.getDistance();
+
+    if(dist == 0.0){
+      return 0.0;
+    }
+
+    int index = distances.length;
+
+    // Check to see which set of distances our current distance falls between
+    for(int i = 0; i < distances.length; i++){
+      if(dist < distances[i]){
+        index = i;
+        break;
+      }
+    }
+
+    if(dist > distances[distances.length - 1]){
+      return 0.0;
+    }
+
+    // Calculate linear function with x: distance and y: RPM, then plug in LL distance
+    double[] point1 = {distances[index - 1], rpms.get(distances[index - 1])};
+    double[] point2 = {distances[index], rpms.get(distances[index])};
+
+    double m = (point2[1] - point1[1]) / (point2[0] - point1[0]);
+    double b = point1[1];
+
+    double rpm = m * (dist - point1[0]) + b;
+
+    return rpm;
   }
 
   @Override

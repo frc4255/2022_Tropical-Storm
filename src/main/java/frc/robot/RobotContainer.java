@@ -27,6 +27,7 @@ import frc.robot.commands.Shoot;
 import frc.robot.commands.Suck;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.LEDs;
+import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.MechManager.AUTO_STATES;
 import frc.robot.subsystems.Drivetrain;
@@ -53,16 +54,17 @@ public class RobotContainer {
   private final Conveyor m_conveyor = new Conveyor();
   private final Climber m_climber = new Climber();
   private final LEDs m_leds = new LEDs();
+  private final Limelight m_limelight = new Limelight();
 
   // Controllers
   public static final XboxController driveController = new XboxController(0);
   public static final XboxController mechController = new XboxController(1);
 
   // Buttons
-  public final JoystickButton shootButton = new JoystickButton(driveController, Button.kRightBumper.value);
+  public final JoystickButton fenderShotButton = new JoystickButton(driveController, Button.kRightBumper.value);
   public final JoystickButton intakeButton = new JoystickButton(driveController, Button.kLeftBumper.value);
   public final JoystickButton expelButton = new JoystickButton(driveController, Button.kB.value);
-  public final JoystickButton hailMaryButton = new JoystickButton(driveController, Button.kY.value);
+  public final JoystickButton visionShotButton = new JoystickButton(driveController, Button.kY.value);
 
   public final JoystickButton hopperIntakeButton = new JoystickButton(mechController, Button.kX.value);
   public final JoystickButton liftButton = new JoystickButton(mechController, Button.kY.value);
@@ -77,6 +79,7 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+
     // Configure the button bindings
     configureButtonBindings();
 
@@ -91,7 +94,6 @@ public class RobotContainer {
 
 
     // AUTO STUFF
-
     String fB = "fourBall";
     String tB = "twoBall";
     String nB = "noBall";
@@ -112,8 +114,12 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
 
-    hailMaryButton.whileHeld(() -> Shooter.setpoint = Shooter.hailMarySetpoint);
-    hailMaryButton.whenReleased(() -> Shooter.setpoint = Shooter.shootSetpoint);
+    visionShotButton.whenHeld(new InstantCommand(() -> Drivetrain.State = Drivetrain.STATES.AUTO)).whenHeld(
+      new InstantCommand(() -> Shooter.State = Shooter.STATES.VISION_SHOOT));
+    visionShotButton.whenReleased(() -> Drivetrain.State = Drivetrain.STATES.MANUAL).whenReleased(
+      () -> Shooter.State = Shooter.STATES.STOP).whenReleased(
+      () -> Conveyor.State = Conveyor.STATES.INDEX).whenReleased(
+      () -> Limelight.ALIGNED = false);
 
     intakeButton.whenHeld(new InstantCommand(() -> Intake.State = Intake.STATES.INTAKE)).whenHeld(new InstantCommand(() -> Hopper.State = Hopper.STATES.FUNNEL));
     intakeButton.whenReleased(() -> Intake.State = Intake.STATES.STOP).whenReleased(() -> Hopper.State = Hopper.STATES.POST_FUNNEL);
@@ -121,8 +127,8 @@ public class RobotContainer {
     expelButton.whileHeld(() -> Intake.State = Intake.STATES.EXPEL).whileHeld(() -> Hopper.State = Hopper.STATES.EXPEL);
     expelButton.whenReleased(() -> Intake.State = Intake.STATES.STOP).whenReleased(() -> Hopper.State = Hopper.STATES.STOP);
 
-    shootButton.whileHeld(() -> Shooter.State = Shooter.STATES.SHOOT);
-    shootButton.whenReleased(() -> Shooter.State = Shooter.STATES.STOP).whenReleased(
+    fenderShotButton.whileHeld(() -> Shooter.State = Shooter.STATES.FENDER_SHOOT);
+    fenderShotButton.whenReleased(() -> Shooter.State = Shooter.STATES.STOP).whenReleased(
                              () -> Conveyor.State = Conveyor.STATES.INDEX).whenReleased(
                              () -> Hopper.State = Hopper.STATES.STOP);
 
@@ -179,13 +185,13 @@ public class RobotContainer {
     Command fourBall = new AutoMechManager(AUTO_STATES.ENABLE_INTAKE).andThen(
                   ball1).andThen(
                   shoot1).andThen(
-                  new AutoMechManager(AUTO_STATES.SHOOT)).andThen(
+                  new AutoMechManager(AUTO_STATES.FENDER_SHOOT)).andThen(
                   new AutoMechManager(AUTO_STATES.ENABLE_INTAKE)).andThen(
                   ball2and3).andThen(
                   new AutoMechManager(AUTO_STATES.INTAKE)).andThen(
                   shoot2).andThen(
                   new AutoMechManager(AUTO_STATES.DISABLE_INTAKE)).andThen(
-                  new AutoMechManager(AUTO_STATES.SHOOT));
+                  new AutoMechManager(AUTO_STATES.FENDER_SHOOT));
 
 
     Command twoBall = new AutoMechManager(AUTO_STATES.ENABLE_INTAKE).andThen(
@@ -193,10 +199,10 @@ public class RobotContainer {
                       new AutoMechManager(AUTO_STATES.INTAKE)).andThen(
                       shoot1_TWO_BALL).andThen(
                       new AutoMechManager(AUTO_STATES.DISABLE_INTAKE)).andThen(
-                      new AutoMechManager(AUTO_STATES.SHOOT));
+                      new AutoMechManager(AUTO_STATES.FENDER_SHOOT));
+
 
     // GET SELECTED AUTO
-
     String choice;
     
     try{

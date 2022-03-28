@@ -18,6 +18,11 @@ import frc.robot.Constants;
 import frc.robot.wrappers.TalonFXEncoder;
 
 public class Drivetrain extends SubsystemBase {
+
+  public static enum STATES {MANUAL, AUTO}
+
+  public static STATES State = STATES.MANUAL;
+
   // The motors on the left side of the drive.
 
   WPI_TalonFX left0 = new WPI_TalonFX(Constants.Drivetrain.leftMotor0);

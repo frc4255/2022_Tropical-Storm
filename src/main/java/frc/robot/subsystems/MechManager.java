@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class MechManager extends SubsystemBase {
   /** Creates a new MechManager. */
 
-  public static enum AUTO_STATES {NONE, SHOOT, INTAKE, ENABLE_INTAKE, DISABLE_INTAKE}
+  public static enum AUTO_STATES {NONE, FENDER_SHOOT, VISION_SHOOT, INTAKE, ENABLE_INTAKE, DISABLE_INTAKE}
 
   public static AUTO_STATES State = AUTO_STATES.NONE;
 

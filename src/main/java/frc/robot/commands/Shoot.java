@@ -12,6 +12,7 @@ import frc.robot.Shuphlebord;
 import frc.robot.TabData;
 import frc.robot.subsystems.Conveyor;
 import frc.robot.subsystems.Hopper;
+import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.MechManager;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.MechManager.AUTO_STATES;
@@ -22,8 +23,8 @@ public class Shoot extends CommandBase {
 
   Shooter shooter;
   TabData shooterData = Shuphlebord.shooterData;
+  double setpoint;
 
-  
   double kp = 0.4;
   double ki = 0.1;
   double kd = 0.014;
@@ -50,6 +51,11 @@ public class Shoot extends CommandBase {
   @Override
   public void initialize() {
 
+    shooterData.updateEntry("kP", kp);
+    shooterData.updateEntry("kI", ki);
+    shooterData.updateEntry("kD", kd);
+    shooterData.updateEntry("Setpoint", setpoint);
+
     controller.setIntegratorRange(-1000.0, 0);
 
   }
@@ -58,70 +64,100 @@ public class Shoot extends CommandBase {
   @Override
   public void execute() {
 
-    if(Shooter.State == Shooter.STATES.SHOOT) {
+    setpoint = Shooter.shootSetpoint;
+    
+    double adjustedkp = shooterData.getEntryData("kP").getDouble();
+    double adjustedki = shooterData.getEntryData("kI").getDouble();
+    double adjustedkd = shooterData.getEntryData("kD").getDouble();
+    double adjustedSetpoint = shooterData.getEntryData("Setpoint").getDouble();
 
-      double velocitySetpoint = Shooter.setpoint;
-      velocitySetpoint /= 60.0; //In rotations per second
+    if(kd != adjustedkp || ki != adjustedki || kd != adjustedkd || setpoint != adjustedSetpoint){
+      kp = adjustedkp;
+      ki = adjustedki;
+      kd = adjustedkd;
 
+      controller.setPID(kp, ki, kd);
+      Shooter.shootSetpoint = adjustedSetpoint;
+    }
+
+    if(Shooter.State == Shooter.STATES.FENDER_SHOOT) {
+
+      double velocitySetpoint = Shooter.shootSetpoint / 60.0; //In rotations per second
       controller.setSetpoint(velocitySetpoint);
-
       double rps = shooter.getRPM() / 60.0;
       double power = feedforward.calculate(velocitySetpoint) + controller.calculate(rps);
+
       shooterData.updateEntry("RPM", rps * 60.0);
-      shooterData.updateEntry("Setpoint", Shooter.setpoint);
+      shooterData.updateEntry("Setpoint", Shooter.shootSetpoint);
       shooterData.updateEntry("Power", power);
-      shooterData.updateEntry("Error", Shooter.setpoint - rps * 60.0);
+      shooterData.updateEntry("Error", Shooter.shootSetpoint - rps * 60.0);
 
       shooter.setVoltage(power);
 
-      if(Math.abs(shooter.getRPM() - Shooter.setpoint) <= tolerance && toleranceTimer.get() > 0.1){
-
+      if(Math.abs(shooter.getRPM() - Shooter.shootSetpoint) <= tolerance && toleranceTimer.get() > 0.1){
         Conveyor.State = Conveyor.STATES.FEED;
         Hopper.State = Hopper.STATES.FUNNEL;
-
-      } else if(Math.abs(shooter.getRPM() - Shooter.setpoint) <= tolerance){
-        
+      } else if(Math.abs(shooter.getRPM() - Shooter.shootSetpoint) <= tolerance){
         toleranceTimer.start();
-
       }else{
-
-        if(MechManager.State != AUTO_STATES.SHOOT){
-
+        if(MechManager.State != AUTO_STATES.FENDER_SHOOT){
           Conveyor.State = Conveyor.STATES.STOP;
-
         }
         toleranceTimer.reset();
-        
       }
 
       lastPressed = true;
 
-    } else if(Shooter.State == Shooter.STATES.EXPEL){
+    // ------------------------------------------------------------------------------------------------------
+    } else if(Shooter.State == Shooter.STATES.VISION_SHOOT){
 
-      double velocitySetpoint = Shooter.expelSetpoint;
-      velocitySetpoint /= 60.0; //In rotations per second
-
+      double tarRPM = shooter.getTargetRPM();
+      double velocitySetpoint = tarRPM / 60.0; //In rotations per second
       controller.setSetpoint(velocitySetpoint);
+      double rps = shooter.getRPM() / 60.0;
+      double power = feedforward.calculate(velocitySetpoint) + controller.calculate(rps);
 
+      shooterData.updateEntry("RPM", rps * 60.0);
+      shooterData.updateEntry("Setpoint", tarRPM);
+      shooterData.updateEntry("Power", power);
+      shooterData.updateEntry("Error", tarRPM - rps * 60.0);
+
+      shooter.setVoltage(power);
+
+      if(Math.abs(shooter.getRPM() - tarRPM) <= tolerance && toleranceTimer.get() > 0.1 && Limelight.ALIGNED){
+        Conveyor.State = Conveyor.STATES.FEED;
+        Hopper.State = Hopper.STATES.FUNNEL;
+      } else if(Math.abs(shooter.getRPM() - tarRPM) <= tolerance){
+        toleranceTimer.start();
+      }else{
+        if(MechManager.State != AUTO_STATES.FENDER_SHOOT){
+          Conveyor.State = Conveyor.STATES.STOP;
+        }
+        toleranceTimer.reset();
+      }
+    
+    // ------------------------------------------------------------------------------------------------------    
+    }  else if(Shooter.State == Shooter.STATES.EXPEL){
+
+      double velocitySetpoint = Shooter.expelSetpoint / 60.0; //In rotations per second
+      controller.setSetpoint(velocitySetpoint);
       double rps = shooter.getRPM() / 60; 
       double power = feedforward.calculate(velocitySetpoint) + controller.calculate(rps);
+
       shooterData.updateEntry("RPM", rps * 60.0);
       shooterData.updateEntry("Setpoint", Shooter.expelSetpoint);
       shooterData.updateEntry("Power", power);
 
       shooter.setVoltage(power);
-    
+
+    // ------------------------------------------------------------------------------------------------------
     } else if(Shooter.State == Shooter.STATES.STOP){
-
       if(lastPressed){
-
         Conveyor.State = Conveyor.STATES.INDEX;
-
       }
-
       shooter.setVoltage(0.0);
-
       lastPressed = false;
+      controller.reset();
     }
   }
 

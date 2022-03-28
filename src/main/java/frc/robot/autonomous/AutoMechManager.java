@@ -40,10 +40,9 @@ public class AutoMechManager extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    
 
-    System.out.println(MechManager.State);
-
-    if(MechManager.State == MechManager.AUTO_STATES.SHOOT && shootTimer.get() >= autoShootLimit){
+    if(MechManager.State == MechManager.AUTO_STATES.FENDER_SHOOT && shootTimer.get() >= autoShootLimit){
 
       MechManager.State = MechManager.AUTO_STATES.NONE;
       shootTimer.reset();
@@ -51,10 +50,10 @@ public class AutoMechManager extends CommandBase {
       Hopper.State = Hopper.STATES.STOP;
       finished = true;
 
-    } else if(MechManager.State == MechManager.AUTO_STATES.SHOOT){
+    } else if(MechManager.State == MechManager.AUTO_STATES.FENDER_SHOOT){
 
       shootTimer.start();
-      Shooter.State = Shooter.STATES.SHOOT;
+      Shooter.State = Shooter.STATES.FENDER_SHOOT;
       Hopper.State = Hopper.STATES.FUNNEL;
       finished = false;
 
