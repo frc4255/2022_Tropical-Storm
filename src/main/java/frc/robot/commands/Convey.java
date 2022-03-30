@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Conveyor;
 import frc.robot.subsystems.Hopper;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.MechManager;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Conveyor.SUBSTATES;
 
@@ -21,8 +22,8 @@ public class Convey extends CommandBase {
   Timer VOMIT_TIMER = new Timer();
   Timer MISFIRE_TIMER = new Timer();
 
-  double LOAD_TIME = 0.3;
-  double VOMIT_TIME = 1.0;
+  double LOAD_TIME = 0.25;
+  double VOMIT_TIME = 0.8;
   double MISFIRE_TIME = 0.5;
 
   /** Creates a new Lift. */
@@ -127,7 +128,12 @@ public class Convey extends CommandBase {
       
       }
     } else if(Conveyor.State == Conveyor.STATES.FEED){
-      conveyor.set(conveyor.liftSpeed);
+
+      if(MechManager.State == MechManager.AUTO_STATES.VISION_SHOOT){
+        conveyor.set(conveyor.liftSpeed * 3.1);
+      } else{
+        conveyor.set(conveyor.liftSpeed);
+      }
       
       Conveyor.Substate = SUBSTATES.IDLE;
       Conveyor.ballsInConveyor = 0;

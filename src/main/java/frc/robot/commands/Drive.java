@@ -31,11 +31,11 @@ public class Drive extends CommandBase {
   double kp = 0.07;
   double ki = 0.0;
   double kd = 0.003;
-  double tolerance = 3.0;
+  double angleTolerance = 5.0;
   PIDController controller = new PIDController(kp, ki, kd);
 
   Timer alignedTimer = new Timer();
-  double alignedLimit = 1.0;
+  double alignedLimit = 0.5;
 
   TabData drivetrainData = Shuphlebord.drivetrainData;
 
@@ -126,23 +126,18 @@ public class Drive extends CommandBase {
         power = -limit;
       }
 
-      if(Math.abs(Math.abs(pos)) < tolerance && alignedTimer.get() > alignedLimit){
-        System.out.print("ALIGNED!!");
+      if(Math.abs(Math.abs(pos)) < angleTolerance && alignedTimer.get() > alignedLimit){
         alignedTimer.start();
         Limelight.ALIGNED = true;
         drivetrain.arcadeDrive(controllerY, 0.0);
-      } else if(Math.abs(pos) < tolerance){
-        System.out.print("WITHIN RANGE!");
+      } else if(Math.abs(pos) < angleTolerance){
         alignedTimer.start();
         drivetrain.arcadeDrive(controllerY, power);
       } else{
-        System.out.print("ALIGNING!");
         Limelight.ALIGNED = false;
         drivetrain.arcadeDrive(controllerY, power);
         alignedTimer.reset();
       }
-
-      System.out.println(", Tolerant?: " + (Math.abs(pos) < tolerance));
     }
   }
 

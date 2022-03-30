@@ -18,7 +18,7 @@ import frc.robot.wrappers.TalonFXEncoder;
 public class Shooter extends SubsystemBase {
   /** Creates a new Shooter. */
 
-  public static enum STATES {FENDER_SHOOT, EXPEL, STOP, VISION_SHOOT};
+  public static enum STATES {FENDER_SHOOT, EXPEL, STOP, VISION_SHOOT, IDLE};
 
   public static STATES State = STATES.STOP;
 
@@ -29,6 +29,7 @@ public class Shooter extends SubsystemBase {
   TalonFXEncoder rightEncoder;
 
   public static double shootSetpoint = 1700.0;
+  public static double idleSetpoint = 2150.0;
   public static double expelSetpoint = 600.0;
 
   public Shooter() {
@@ -116,7 +117,7 @@ public class Shooter extends SubsystemBase {
     }
 
     if(dist > distances[distances.length - 1]){
-      return 0.0;
+      return rpms.get(125.0);
     }
 
     // Calculate linear function with x: distance and y: RPM, then plug in LL distance

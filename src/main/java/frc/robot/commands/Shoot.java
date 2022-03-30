@@ -24,18 +24,18 @@ public class Shoot extends CommandBase {
 
   Shooter shooter;
   TabData shooterData = Shuphlebord.shooterData;
-  double setpoint;
+  double setpoint = Shooter.shootSetpoint;
 
-  double kp = 0.4;
-  double ki = 0.1;
-  double kd = 0.014;
+  double kp = 0.28117;
+  double ki = 0.0;
+  double kd = 0.0;
   double power = 0.0;
   double tolerance = 50.0;
   PIDController controller = new PIDController(kp, ki, kd);
 
-  double ks = 0.89497;
-  double kv = 0.12483;
-  double ka = 0.0094741;
+  double ks = 0.84619;
+  double kv = 0.12756;
+  double ka = 0.0096118;
   SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(ks, kv, ka);
 
   Timer toleranceTimer = new Timer();
@@ -81,12 +81,14 @@ public class Shoot extends CommandBase {
       Shooter.shootSetpoint = adjustedSetpoint;
     }
 
-    if(RobotContainer.driveController.getRawButtonPressed(RobotContainer.alignButtonValue)){
-      Shooter.State = Shooter.STATES.VISION_SHOOT;
-    } else if(RobotContainer.driveController.getRawButtonReleased(RobotContainer.alignButtonValue)){
-      Shooter.State = Shooter.STATES.STOP;
-    }
+    boolean buttonPressed = RobotContainer.driveController.getRawButton(RobotContainer.alignButtonValue);
 
+    if(Shooter.State == Shooter.STATES.FENDER_SHOOT && buttonPressed){
+
+      Shooter.State = Shooter.STATES.VISION_SHOOT;
+
+    }
+    
     if(Shooter.State == Shooter.STATES.FENDER_SHOOT) {
 
       double velocitySetpoint = Shooter.shootSetpoint / 60.0; //In rotations per second
@@ -131,13 +133,15 @@ public class Shoot extends CommandBase {
 
       shooter.setVoltage(power);
 
+      System.out.println("ALIGNED?: " + Limelight.ALIGNED);
+
       if(Math.abs(shooter.getRPM() - tarRPM) <= tolerance && toleranceTimer.get() > 0.1 && Limelight.ALIGNED){
         Conveyor.State = Conveyor.STATES.FEED;
         Hopper.State = Hopper.STATES.FUNNEL;
       } else if(Math.abs(shooter.getRPM() - tarRPM) <= tolerance){
         toleranceTimer.start();
       }else{
-        if(MechManager.State != AUTO_STATES.FENDER_SHOOT){
+        if(MechManager.State != MechManager.AUTO_STATES.VISION_SHOOT && Conveyor.State != Conveyor.STATES.FEED){
           Conveyor.State = Conveyor.STATES.STOP;
         }
         toleranceTimer.reset();
@@ -146,6 +150,21 @@ public class Shoot extends CommandBase {
       lastPressed = true;
     
     // ------------------------------------------------------------------------------------------------------    
+    }  else if(Shooter.State == Shooter.STATES.IDLE){
+
+      double tarRPM = Shooter.idleSetpoint;
+      double velocitySetpoint = tarRPM / 60.0; //In rotations per second
+      controller.setSetpoint(velocitySetpoint);
+      double rps = shooter.getRPM() / 60.0;
+      double power = feedforward.calculate(velocitySetpoint) + controller.calculate(rps);
+
+      shooterData.updateEntry("RPM", rps * 60.0);
+      shooterData.updateEntry("Setpoint", tarRPM);
+      shooterData.updateEntry("Power", power);
+      shooterData.updateEntry("Error", tarRPM - rps * 60.0);
+
+      shooter.setVoltage(power);
+
     }  else if(Shooter.State == Shooter.STATES.EXPEL){
 
       double velocitySetpoint = Shooter.expelSetpoint / 60.0; //In rotations per second
@@ -168,6 +187,9 @@ public class Shoot extends CommandBase {
       lastPressed = false;
       controller.reset();
     }
+
+    System.out.println("Shooter State: " + Shooter.State.toString());
+
   }
 
   // Called once the command ends or is interrupted.

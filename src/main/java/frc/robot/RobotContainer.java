@@ -28,6 +28,7 @@ import frc.robot.commands.Shoot;
 import frc.robot.commands.Suck;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.LEDs;
+import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.MechManager.AUTO_STATES;
 import frc.robot.subsystems.Drivetrain;
@@ -54,6 +55,7 @@ public class RobotContainer {
   private final Conveyor m_conveyor = new Conveyor();
   private final Climber m_climber = new Climber();
   private final LEDs m_leds = new LEDs();
+  private final Limelight m_limelight = new Limelight();
 
   // Controllers
   public static final XboxController driveController = new XboxController(0);
@@ -100,8 +102,8 @@ public class RobotContainer {
     String nB = "noBall";
 
     autoChooser = new SendableChooser<>();
-    autoChooser.setDefaultOption("4 Ball", fourB);
-    autoChooser.addOption("5 Ball", fiveB);
+    autoChooser.setDefaultOption("5 Ball", fiveB);
+    autoChooser.addOption("4 Ball", fourB);
     autoChooser.addOption("2 Ball", tB);
     autoChooser.addOption("Do Nothing", nB);
 
@@ -209,6 +211,7 @@ public class RobotContainer {
 
     Command fiveBall = new AutoMechManager(AUTO_STATES.ENABLE_INTAKE).andThen(
                        ball1_FIVE_BALL).andThen(
+                       new InstantCommand(() -> Shooter.State = Shooter.STATES.IDLE)).andThen(
                        shoot1_FIVE_BALL).andThen(
                        new AutoMechManager(AUTO_STATES.VISION_SHOOT)).andThen(
                        new AutoMechManager(AUTO_STATES.ENABLE_INTAKE)).andThen(
@@ -219,8 +222,9 @@ public class RobotContainer {
                        ball3and4_FIVE_BALL).andThen(
                        new AutoMechManager(AUTO_STATES.INTAKE)).andThen(
                        shoot3_FIVE_BALL).andThen(
+                       new AutoMechManager(AUTO_STATES.VISION_SHOOT)).andThen(
                        new AutoMechManager(AUTO_STATES.DISABLE_INTAKE)).andThen(
-                       new AutoMechManager(AUTO_STATES.VISION_SHOOT));
+                       new AutoMechManager(AUTO_STATES.STOP_SHOOT));
 
 
     // GET SELECTED AUTO

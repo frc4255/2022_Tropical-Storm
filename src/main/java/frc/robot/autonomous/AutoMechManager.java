@@ -6,6 +6,7 @@ package frc.robot.autonomous;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystems.Conveyor;
 import frc.robot.subsystems.Hopper;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Limelight;
@@ -17,10 +18,10 @@ public class AutoMechManager extends CommandBase {
 
   double fenderShootLimit = 2.2;
   Timer fenderShootTimer = new Timer();
-
-  double visionShootLimit = 2.2;
-  Timer visionShootTimer = new Timer();
   
+  double visionShootLimit = 1.8;
+  Timer visionShootTimer = new Timer();
+
   double autoIntakeLimit = 0.25;
   Timer intakeTimer = new Timer();
 
@@ -63,22 +64,32 @@ public class AutoMechManager extends CommandBase {
 
     }
 
-    if(MechManager.State == MechManager.AUTO_STATES.VISION_SHOOT && visionShootTimer.get() >= visionShootLimit){
+    if(MechManager.State == MechManager.AUTO_STATES.VISION_SHOOT && visionShootTimer.get() > visionShootLimit){
 
       MechManager.State = MechManager.AUTO_STATES.NONE;
-      visionShootTimer.reset();
-      Shooter.State = Shooter.STATES.STOP;
+      Shooter.State = Shooter.STATES.IDLE;
+      Conveyor.State = Conveyor.STATES.INDEX;
       Hopper.State = Hopper.STATES.STOP;
+      visionShootTimer.reset();
       Limelight.ALIGNED = false;
+      System.out.println("Aligned is being set to false in AutoMechManager!");
       finished = true;
 
     } else if(MechManager.State == MechManager.AUTO_STATES.VISION_SHOOT){
 
-      visionShootTimer.start();
       Limelight.ALIGNED = true;
+      visionShootTimer.start();
+      System.out.println("Auto Ran for some Reason!");
       Shooter.State = Shooter.STATES.VISION_SHOOT;
       Hopper.State = Hopper.STATES.FUNNEL;
       finished = false;
+
+    }
+
+    
+    if(MechManager.State == MechManager.AUTO_STATES.STOP_SHOOT){
+
+      Shooter.State = Shooter.STATES.STOP;
 
     }
 
