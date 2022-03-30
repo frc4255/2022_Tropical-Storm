@@ -7,6 +7,7 @@ package frc.robot.commands;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive.WheelSpeeds;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
@@ -27,11 +28,14 @@ public class Drive extends CommandBase {
   SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(DTProperties.ksVolts, DTProperties.kvVoltSecondsPerMeter,
                                                                   DTProperties.kaVoltSecondsSquaredPerMeter);
 
-  double kp = 0.0;
+  double kp = 0.07;
   double ki = 0.0;
-  double kd = 0.0;
-  double tolerance = 0.5;
+  double kd = 0.003;
+  double tolerance = 3.0;
   PIDController controller = new PIDController(kp, ki, kd);
+
+  Timer alignedTimer = new Timer();
+  double alignedLimit = 1.0;
 
   TabData drivetrainData = Shuphlebord.drivetrainData;
 
@@ -48,6 +52,8 @@ public class Drive extends CommandBase {
     drivetrainData.updateEntry("kP", kp);
     drivetrainData.updateEntry("kI", ki);
     drivetrainData.updateEntry("kD", kd);
+
+    controller.setIntegratorRange(-0.5, 0.5);
 
   }
 
@@ -83,6 +89,7 @@ public class Drive extends CommandBase {
     if(Drivetrain.State == Drivetrain.STATES.MANUAL){
 
       controller.reset();
+      alignedTimer.reset();
 
       double controllerY = -RobotContainer.driveController.getLeftY();
       double controllerX = RobotContainer.driveController.getRightX();
@@ -104,16 +111,38 @@ public class Drive extends CommandBase {
 
       double pos = Limelight.getTx();
       controller.setSetpoint(0.0);
-      
-      double power = controller.calculate(pos);
 
-      if(Math.abs(Math.abs(pos)) > tolerance){
-        drivetrain.arcadeDrive(0.0, power);
-        Limelight.ALIGNED = false;
-      } else{
-        Limelight.ALIGNED = true;
-        drivetrain.arcadeDrive(0.0, 0.0);
+      drivetrainData.updateEntry("TX", pos);
+      drivetrainData.updateEntry("Setpoint", 0.0);
+
+      double controllerY = -RobotContainer.driveController.getLeftY();
+      
+      double power = -controller.calculate(pos);
+
+      double limit = 0.45;
+      if(power > limit){
+        power = limit;
+      } else if(power < -limit){
+        power = -limit;
       }
+
+      if(Math.abs(Math.abs(pos)) < tolerance && alignedTimer.get() > alignedLimit){
+        System.out.print("ALIGNED!!");
+        alignedTimer.start();
+        Limelight.ALIGNED = true;
+        drivetrain.arcadeDrive(controllerY, 0.0);
+      } else if(Math.abs(pos) < tolerance){
+        System.out.print("WITHIN RANGE!");
+        alignedTimer.start();
+        drivetrain.arcadeDrive(controllerY, power);
+      } else{
+        System.out.print("ALIGNING!");
+        Limelight.ALIGNED = false;
+        drivetrain.arcadeDrive(controllerY, power);
+        alignedTimer.reset();
+      }
+
+      System.out.println(", Tolerant?: " + (Math.abs(pos) < tolerance));
     }
   }
 

@@ -8,14 +8,18 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Hopper;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.MechManager;
 import frc.robot.subsystems.Shooter;
 
 public class AutoMechManager extends CommandBase {
   /** Creates a new AutoMechManager. */
 
-  double autoShootLimit = 2.2;
-  Timer shootTimer = new Timer();
+  double fenderShootLimit = 2.2;
+  Timer fenderShootTimer = new Timer();
+
+  double visionShootLimit = 2.2;
+  Timer visionShootTimer = new Timer();
   
   double autoIntakeLimit = 0.25;
   Timer intakeTimer = new Timer();
@@ -42,18 +46,37 @@ public class AutoMechManager extends CommandBase {
   public void execute() {
     
 
-    if(MechManager.State == MechManager.AUTO_STATES.FENDER_SHOOT && shootTimer.get() >= autoShootLimit){
+    if(MechManager.State == MechManager.AUTO_STATES.FENDER_SHOOT && fenderShootTimer.get() >= fenderShootLimit){
 
       MechManager.State = MechManager.AUTO_STATES.NONE;
-      shootTimer.reset();
+      fenderShootTimer.reset();
       Shooter.State = Shooter.STATES.STOP;
       Hopper.State = Hopper.STATES.STOP;
       finished = true;
 
     } else if(MechManager.State == MechManager.AUTO_STATES.FENDER_SHOOT){
 
-      shootTimer.start();
+      fenderShootTimer.start();
       Shooter.State = Shooter.STATES.FENDER_SHOOT;
+      Hopper.State = Hopper.STATES.FUNNEL;
+      finished = false;
+
+    }
+
+    if(MechManager.State == MechManager.AUTO_STATES.VISION_SHOOT && visionShootTimer.get() >= visionShootLimit){
+
+      MechManager.State = MechManager.AUTO_STATES.NONE;
+      visionShootTimer.reset();
+      Shooter.State = Shooter.STATES.STOP;
+      Hopper.State = Hopper.STATES.STOP;
+      Limelight.ALIGNED = false;
+      finished = true;
+
+    } else if(MechManager.State == MechManager.AUTO_STATES.VISION_SHOOT){
+
+      visionShootTimer.start();
+      Limelight.ALIGNED = true;
+      Shooter.State = Shooter.STATES.VISION_SHOOT;
       Hopper.State = Hopper.STATES.FUNNEL;
       finished = false;
 

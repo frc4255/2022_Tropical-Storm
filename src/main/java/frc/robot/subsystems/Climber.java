@@ -4,13 +4,10 @@
 
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
-import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 
 public class Climber extends SubsystemBase {
   /** Creates a new Climber. */
@@ -28,13 +25,14 @@ public class Climber extends SubsystemBase {
   public Solenoid stopper;
   boolean holding = false;
   
-  public Climber() {
+  public Climber() {/*
     motor = new WPI_TalonFX(Constants.Climber.motor);
 
     motor.setNeutralMode(NeutralMode.Brake);
 
-    stopper = new Solenoid(PneumaticsModuleType.REVPH, Constants.Climber.stopper);
+    stopper = new Solenoid(PneumaticsModuleType.REVPH, Constants.Climber.stopper);*/
   }
+  /*
 
   public void set(double power) {
     motor.set(power);
@@ -58,7 +56,7 @@ public class Climber extends SubsystemBase {
 
   public void resetEncoder(){
     motor.setSelectedSensorPosition(0.0);
-  }
+  }*/
 
   @Override
   public void periodic() {

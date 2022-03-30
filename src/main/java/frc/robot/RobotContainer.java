@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DTProperties;
+import frc.robot.Robot.FiveBallAuto;
 import frc.robot.Robot.FourBallAuto;
 import frc.robot.Robot.TwoBallAuto;
 import frc.robot.autonomous.AutoMechManager;
@@ -27,7 +28,6 @@ import frc.robot.commands.Shoot;
 import frc.robot.commands.Suck;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.LEDs;
-import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.MechManager.AUTO_STATES;
 import frc.robot.subsystems.Drivetrain;
@@ -54,7 +54,6 @@ public class RobotContainer {
   private final Conveyor m_conveyor = new Conveyor();
   private final Climber m_climber = new Climber();
   private final LEDs m_leds = new LEDs();
-  private final Limelight m_limelight = new Limelight();
 
   // Controllers
   public static final XboxController driveController = new XboxController(0);
@@ -64,7 +63,8 @@ public class RobotContainer {
   public final JoystickButton fenderShotButton = new JoystickButton(driveController, Button.kRightBumper.value);
   public final JoystickButton intakeButton = new JoystickButton(driveController, Button.kLeftBumper.value);
   public final JoystickButton expelButton = new JoystickButton(driveController, Button.kB.value);
-  public final JoystickButton visionShotButton = new JoystickButton(driveController, Button.kY.value);
+  public static final int alignButtonValue = Button.kY.value;
+  public final JoystickButton alignButton = new JoystickButton(driveController, alignButtonValue);
 
   public final JoystickButton hopperIntakeButton = new JoystickButton(mechController, Button.kX.value);
   public final JoystickButton liftButton = new JoystickButton(mechController, Button.kY.value);
@@ -94,12 +94,14 @@ public class RobotContainer {
 
 
     // AUTO STUFF
-    String fB = "fourBall";
+    String fourB = "fourBall";
+    String fiveB = "fiveBall";
     String tB = "twoBall";
     String nB = "noBall";
 
     autoChooser = new SendableChooser<>();
-    autoChooser.setDefaultOption("4 Ball", fB);
+    autoChooser.setDefaultOption("4 Ball", fourB);
+    autoChooser.addOption("5 Ball", fiveB);
     autoChooser.addOption("2 Ball", tB);
     autoChooser.addOption("Do Nothing", nB);
 
@@ -114,12 +116,8 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
 
-    visionShotButton.whenHeld(new InstantCommand(() -> Drivetrain.State = Drivetrain.STATES.AUTO)).whenHeld(
-      new InstantCommand(() -> Shooter.State = Shooter.STATES.VISION_SHOOT));
-    visionShotButton.whenReleased(() -> Drivetrain.State = Drivetrain.STATES.MANUAL).whenReleased(
-      () -> Shooter.State = Shooter.STATES.STOP).whenReleased(
-      () -> Conveyor.State = Conveyor.STATES.INDEX).whenReleased(
-      () -> Limelight.ALIGNED = false);
+    alignButton.whenHeld(new InstantCommand(() -> Drivetrain.State = Drivetrain.STATES.AUTO));
+    alignButton.whenReleased(() -> Drivetrain.State = Drivetrain.STATES.MANUAL);
 
     intakeButton.whenHeld(new InstantCommand(() -> Intake.State = Intake.STATES.INTAKE)).whenHeld(new InstantCommand(() -> Hopper.State = Hopper.STATES.FUNNEL));
     intakeButton.whenReleased(() -> Intake.State = Intake.STATES.STOP).whenReleased(() -> Hopper.State = Hopper.STATES.POST_FUNNEL);
@@ -171,27 +169,35 @@ public class RobotContainer {
 
     // CREATE PATHS
     // 4 BALL PATHS
-    RamseteCommand ball1 = getRamseteCommand(FourBallAuto.ball1Trajectory);
-    RamseteCommand shoot1 = getRamseteCommand(FourBallAuto.shoot1Trajectory);
-    RamseteCommand ball2and3 = getRamseteCommand(FourBallAuto.ball2and3Trajectory);
-    RamseteCommand shoot2 = getRamseteCommand(FourBallAuto.shoot2Trajectory);
+    RamseteCommand ball1_FOUR_BALL = getRamseteCommand(FourBallAuto.ball1Trajectory);
+    RamseteCommand shoot1_FOUR_BALL = getRamseteCommand(FourBallAuto.shoot1Trajectory);
+    RamseteCommand ball2and3_FOUR_BALL = getRamseteCommand(FourBallAuto.ball2and3Trajectory);
+    RamseteCommand shoot2_FOUR_BALL = getRamseteCommand(FourBallAuto.shoot2Trajectory);
 
     // 2 BALL PATHS
     RamseteCommand ball1_TWO_BALL = getRamseteCommand(TwoBallAuto.ball1Trajectory);
     RamseteCommand shoot1_TWO_BALL = getRamseteCommand(TwoBallAuto.shoot1Trajectory);
 
+    // 5 BALL PATHS
+    RamseteCommand ball1_FIVE_BALL = getRamseteCommand(FiveBallAuto.ball1Trajectory);
+    RamseteCommand shoot1_FIVE_BALL = getRamseteCommand(FiveBallAuto.shoot1Trajectory);
+    RamseteCommand ball2_FIVE_BALL = getRamseteCommand(FiveBallAuto.ball2Trajectory);
+    RamseteCommand shoot2_FIVE_BALL = getRamseteCommand(FiveBallAuto.shoot2Trajectory);
+    RamseteCommand ball3and4_FIVE_BALL = getRamseteCommand(FiveBallAuto.ball3and4Trajectory);
+    RamseteCommand shoot3_FIVE_BALL = getRamseteCommand(FiveBallAuto.shoot3Trajectory);
+
 
     // COMMANDS
     Command fourBall = new AutoMechManager(AUTO_STATES.ENABLE_INTAKE).andThen(
-                  ball1).andThen(
-                  shoot1).andThen(
-                  new AutoMechManager(AUTO_STATES.FENDER_SHOOT)).andThen(
-                  new AutoMechManager(AUTO_STATES.ENABLE_INTAKE)).andThen(
-                  ball2and3).andThen(
-                  new AutoMechManager(AUTO_STATES.INTAKE)).andThen(
-                  shoot2).andThen(
-                  new AutoMechManager(AUTO_STATES.DISABLE_INTAKE)).andThen(
-                  new AutoMechManager(AUTO_STATES.FENDER_SHOOT));
+                       ball1_FOUR_BALL).andThen(
+                       shoot1_FOUR_BALL).andThen(
+                       new AutoMechManager(AUTO_STATES.FENDER_SHOOT)).andThen(
+                       new AutoMechManager(AUTO_STATES.ENABLE_INTAKE)).andThen(
+                       ball2and3_FOUR_BALL).andThen(
+                       new AutoMechManager(AUTO_STATES.INTAKE)).andThen(
+                       shoot2_FOUR_BALL).andThen(
+                       new AutoMechManager(AUTO_STATES.DISABLE_INTAKE)).andThen(
+                       new AutoMechManager(AUTO_STATES.FENDER_SHOOT));
 
 
     Command twoBall = new AutoMechManager(AUTO_STATES.ENABLE_INTAKE).andThen(
@@ -200,6 +206,21 @@ public class RobotContainer {
                       shoot1_TWO_BALL).andThen(
                       new AutoMechManager(AUTO_STATES.DISABLE_INTAKE)).andThen(
                       new AutoMechManager(AUTO_STATES.FENDER_SHOOT));
+
+    Command fiveBall = new AutoMechManager(AUTO_STATES.ENABLE_INTAKE).andThen(
+                       ball1_FIVE_BALL).andThen(
+                       shoot1_FIVE_BALL).andThen(
+                       new AutoMechManager(AUTO_STATES.VISION_SHOOT)).andThen(
+                       new AutoMechManager(AUTO_STATES.ENABLE_INTAKE)).andThen(
+                       ball2_FIVE_BALL).andThen(
+                       shoot2_FIVE_BALL).andThen(
+                       new AutoMechManager(AUTO_STATES.VISION_SHOOT)).andThen(
+                       new AutoMechManager(AUTO_STATES.ENABLE_INTAKE)).andThen(
+                       ball3and4_FIVE_BALL).andThen(
+                       new AutoMechManager(AUTO_STATES.INTAKE)).andThen(
+                       shoot3_FIVE_BALL).andThen(
+                       new AutoMechManager(AUTO_STATES.DISABLE_INTAKE)).andThen(
+                       new AutoMechManager(AUTO_STATES.VISION_SHOOT));
 
 
     // GET SELECTED AUTO
@@ -234,6 +255,14 @@ public class RobotContainer {
 
       return new InstantCommand();
 
+    } else if(choice == "fiveBall"){
+
+      // 5 BALL
+
+      // Reset odometry to the starting pose of the trajectory.
+      m_drivetrain.resetOdometry(FiveBallAuto.ball1Trajectory.getInitialPose());
+
+      return fiveBall;
     } else{
 
       // 4 BALL, AS FALL BACK OPTION

@@ -8,6 +8,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.RobotContainer;
 import frc.robot.Shuphlebord;
 import frc.robot.TabData;
 import frc.robot.subsystems.Conveyor;
@@ -80,6 +81,12 @@ public class Shoot extends CommandBase {
       Shooter.shootSetpoint = adjustedSetpoint;
     }
 
+    if(RobotContainer.driveController.getRawButtonPressed(RobotContainer.alignButtonValue)){
+      Shooter.State = Shooter.STATES.VISION_SHOOT;
+    } else if(RobotContainer.driveController.getRawButtonReleased(RobotContainer.alignButtonValue)){
+      Shooter.State = Shooter.STATES.STOP;
+    }
+
     if(Shooter.State == Shooter.STATES.FENDER_SHOOT) {
 
       double velocitySetpoint = Shooter.shootSetpoint / 60.0; //In rotations per second
@@ -135,6 +142,8 @@ public class Shoot extends CommandBase {
         }
         toleranceTimer.reset();
       }
+
+      lastPressed = true;
     
     // ------------------------------------------------------------------------------------------------------    
     }  else if(Shooter.State == Shooter.STATES.EXPEL){

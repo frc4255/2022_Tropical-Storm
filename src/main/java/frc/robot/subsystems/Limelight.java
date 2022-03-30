@@ -21,13 +21,12 @@ public class Limelight extends SubsystemBase {
 
   public static double limelightMountHeight = 39.5; //height of mount
   public static double targetHeight = 104.0; //height of target
-  public static double limelightMountAngle = 40.0; //angle of limelight mount
+  public static double limelightMountAngle = 50.0; //angle of limelight mount
   public static boolean ALIGNED = false;
 
 
 
   public Limelight() {
-    reset();
   }
 
   static void reset(){
@@ -80,6 +79,9 @@ public class Limelight extends SubsystemBase {
     tv = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tv").getDouble(0.0);
 
     limelightData.updateEntry("Distance Estimate", getDistance());
+    limelightData.updateEntry("tx", tx);
+    limelightData.updateEntry("ty", ty);
+    limelightData.updateEntry("ALIGNED", ALIGNED);
   }
 
   

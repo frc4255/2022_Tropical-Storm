@@ -37,10 +37,10 @@ public class Robot extends TimedRobot {
   public static class FourBallAuto{
 
     // 4 BALL DIRECTORIES
-    static String ball1Dir = "output/Ball1.wpilib.json";
-    static String shoot1Dir = "output/Shoot1.wpilib.json";
-    static String ball2and3Dir = "output/Ball2and3.wpilib.json";
-    static String shoot2Dir = "output/Shoot2.wpilib.json";
+    static String ball1Dir = "output/Ball1_FOUR_BALL.wpilib.json";
+    static String shoot1Dir = "output/Shoot1_FOUR_BALL.wpilib.json";
+    static String ball2and3Dir = "output/Ball2and3_FOUR_BALL.wpilib.json";
+    static String shoot2Dir = "output/Shoot2_FOUR_BALL.wpilib.json";
 
 
     // 4 BALL TRAJECTORIES
@@ -61,6 +61,27 @@ public class Robot extends TimedRobot {
     // 2 BALL TRAJECTORIES
     public static Trajectory ball1Trajectory = new Trajectory();
     public static Trajectory shoot1Trajectory = new Trajectory();
+
+  }
+
+
+  public static class FiveBallAuto{
+
+    // 5 BALL PATHS
+    static String ball1Dir = "output/Ball1_FIVE_BALL.wpilib.json";
+    static String shoot1Dir = "output/Shoot1_FIVE_BALL.wpilib.json";
+    static String ball2Dir = "output/Ball2_FIVE_BALL.wpilib.json";
+    static String shoot2Dir = "output/Shoot2_FIVE_BALL.wpilib.json";
+    static String ball3and4Dir = "output/Ball3and4_FIVE_BALL.wpilib.json";
+    static String shoot3Dir = "output/Shoot3_FIVE_BALL.wpilib.json";
+
+    // 5 BALL TRAJECTORIES
+    public static Trajectory ball1Trajectory = new Trajectory();
+    public static Trajectory shoot1Trajectory = new Trajectory();
+    public static Trajectory ball2Trajectory = new Trajectory();
+    public static Trajectory shoot2Trajectory = new Trajectory();
+    public static Trajectory ball3and4Trajectory = new Trajectory();
+    public static Trajectory shoot3Trajectory = new Trajectory();
 
   }
 
@@ -87,6 +108,15 @@ public class Robot extends TimedRobot {
     // 2 BALL TRAJECTORIES
     TwoBallAuto.ball1Trajectory = loadTrajectories(TwoBallAuto.ball1Dir);
     TwoBallAuto.shoot1Trajectory = loadTrajectories(TwoBallAuto.shoot1Dir);
+
+    // 5 BALL TRAJECTORIES
+    FiveBallAuto.ball1Trajectory = loadTrajectories(FiveBallAuto.ball1Dir);
+    FiveBallAuto.shoot1Trajectory = loadTrajectories(FiveBallAuto.shoot1Dir);
+    FiveBallAuto.ball2Trajectory = loadTrajectories(FiveBallAuto.ball2Dir);
+    FiveBallAuto.shoot2Trajectory = loadTrajectories(FiveBallAuto.shoot2Dir);
+    FiveBallAuto.ball3and4Trajectory = loadTrajectories(FiveBallAuto.ball3and4Dir);
+    FiveBallAuto.shoot3Trajectory = loadTrajectories(FiveBallAuto.shoot3Dir);
+
 
     m_robotContainer = new RobotContainer();
     LiveWindow.disableAllTelemetry();
