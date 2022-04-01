@@ -181,12 +181,16 @@ public class RobotContainer {
     RamseteCommand shoot1_TWO_BALL = getRamseteCommand(TwoBallAuto.shoot1Trajectory);
 
     // 5 BALL PATHS
-    RamseteCommand ball1_FIVE_BALL = getRamseteCommand(FiveBallAuto.ball1Trajectory);
+    /*RamseteCommand ball1_FIVE_BALL = getRamseteCommand(FiveBallAuto.ball1Trajectory);
     RamseteCommand shoot1_FIVE_BALL = getRamseteCommand(FiveBallAuto.shoot1Trajectory);
     RamseteCommand ball2_FIVE_BALL = getRamseteCommand(FiveBallAuto.ball2Trajectory);
     RamseteCommand shoot2_FIVE_BALL = getRamseteCommand(FiveBallAuto.shoot2Trajectory);
     RamseteCommand ball3and4_FIVE_BALL = getRamseteCommand(FiveBallAuto.ball3and4Trajectory);
-    RamseteCommand shoot3_FIVE_BALL = getRamseteCommand(FiveBallAuto.shoot3Trajectory);
+    RamseteCommand shoot3_FIVE_BALL = getRamseteCommand(FiveBallAuto.shoot3Trajectory);*/
+
+    RamseteCommand ball1and2_FIVE_BALL = getRamseteCommand(FiveBallAuto.ball1and2Trajectory);
+    RamseteCommand ball3_FIVE_BALL = getRamseteCommand(FiveBallAuto.ball3Trajectory);
+    RamseteCommand ball4and5_FIVE_BALL = getRamseteCommand(FiveBallAuto.ball4and5Trajectory);
 
 
     // COMMANDS
@@ -209,7 +213,7 @@ public class RobotContainer {
                       new AutoMechManager(AUTO_STATES.DISABLE_INTAKE)).andThen(
                       new AutoMechManager(AUTO_STATES.FENDER_SHOOT));
 
-    Command fiveBall = new AutoMechManager(AUTO_STATES.ENABLE_INTAKE).andThen(
+    /*Command fiveBall = new AutoMechManager(AUTO_STATES.ENABLE_INTAKE).andThen(
                        ball1_FIVE_BALL).andThen(
                        new InstantCommand(() -> Shooter.State = Shooter.STATES.IDLE)).andThen(
                        shoot1_FIVE_BALL).andThen(
@@ -222,6 +226,19 @@ public class RobotContainer {
                        ball3and4_FIVE_BALL).andThen(
                        new AutoMechManager(AUTO_STATES.INTAKE)).andThen(
                        shoot3_FIVE_BALL).andThen(
+                       new AutoMechManager(AUTO_STATES.VISION_SHOOT)).andThen(
+                       new AutoMechManager(AUTO_STATES.DISABLE_INTAKE)).andThen(
+                       new AutoMechManager(AUTO_STATES.STOP_SHOOT));*/
+    
+    Command fiveBall = new AutoMechManager(AUTO_STATES.ENABLE_INTAKE).andThen(
+                       new InstantCommand(() -> Shooter.State = Shooter.STATES.IDLE)).andThen(
+                       ball1and2_FIVE_BALL).andThen(
+                       new AutoMechManager(AUTO_STATES.VISION_SHOOT)).andThen(
+                       new AutoMechManager(AUTO_STATES.ENABLE_INTAKE)).andThen(
+                       ball3_FIVE_BALL).andThen(
+                       new AutoMechManager(AUTO_STATES.VISION_SHOOT)).andThen(
+                       new AutoMechManager(AUTO_STATES.ENABLE_INTAKE)).andThen(
+                       ball4and5_FIVE_BALL).andThen(
                        new AutoMechManager(AUTO_STATES.VISION_SHOOT)).andThen(
                        new AutoMechManager(AUTO_STATES.DISABLE_INTAKE)).andThen(
                        new AutoMechManager(AUTO_STATES.STOP_SHOOT));
@@ -264,7 +281,7 @@ public class RobotContainer {
       // 5 BALL
 
       // Reset odometry to the starting pose of the trajectory.
-      m_drivetrain.resetOdometry(FiveBallAuto.ball1Trajectory.getInitialPose());
+      m_drivetrain.resetOdometry(FiveBallAuto.ball1and2Trajectory.getInitialPose());
 
       return fiveBall;
     } else{
