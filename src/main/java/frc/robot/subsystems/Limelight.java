@@ -84,6 +84,8 @@ public class Limelight extends SubsystemBase {
     limelightData.updateEntry("ALIGNED", ALIGNED);
   }
 
+  public void doNothing(){
+  }
   
   @Override
   public void periodic() {

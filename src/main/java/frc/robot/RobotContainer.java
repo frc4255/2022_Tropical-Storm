@@ -76,6 +76,8 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    // Removes pesky unused value thingy from VSCode
+    m_limelight.doNothing();
 
     // Configure the button bindings
     configureButtonBindings();

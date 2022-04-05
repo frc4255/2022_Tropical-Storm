@@ -4,8 +4,12 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
+import frc.robot.Shuphlebord;
+import frc.robot.TabData;
 import frc.robot.subsystems.Climber;
 
 public class Climb extends CommandBase {
@@ -13,7 +17,26 @@ public class Climb extends CommandBase {
 
   Climber climber;
 
+  TabData climberData = Shuphlebord.climberData;
+
   double scaler = 5.0 / 7.0;
+
+  double maxVelocity = 1.0;
+  double maxAcceleration = 1.0;
+  Constraints constraints = new Constraints(maxVelocity, maxAcceleration);
+
+  double setpoint = 0.0;
+  double step = 0.01;
+
+  double leftKP = 0.0;
+  double leftKI = 0.0;
+  double leftKD = 0.0;
+  ProfiledPIDController leftController = new ProfiledPIDController(leftKP, leftKI, leftKD, constraints);
+
+  double rightKP = 0.0;
+  double rightKI = 0.0;
+  double rightKD = 0.0;
+  ProfiledPIDController rightController = new ProfiledPIDController(rightKP, rightKI, rightKD, constraints);
 
   /** Creates a new Climb. */
   public Climb(Climber m_climber) {
@@ -24,43 +47,41 @@ public class Climb extends CommandBase {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+
+    leftController.setGoal(setpoint);
+    rightController.setGoal(setpoint);
+
+    climberData.updateEntry("Setpoint", setpoint);
+
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
 
-    double leftY = RobotContainer.mechController.getLeftY();
-    double rightY = -RobotContainer.mechController.getRightY();
+    double joystickValue = RobotContainer.mechController.getLeftY();
   
-    if(leftY > 0.5){
+    if(joystickValue > 0.5){
 
-      climber.setLeft(climber.armUpSpeed);
+      setpoint += step;
+      
 
-    } else if(leftY < -0.5){
+    } else if(joystickValue < -0.5){
 
-      climber.setLeft(climber.armDownSpeed);
+      setpoint -= step;
 
-    } else{
+    } 
 
-      climber.stopLeft();
+    double leftPower = leftController.calculate(climber.getLeftDistance());
+    double rightPower = rightController.calculate(climber.getRightDistance());
 
-    }
+    climber.setLeft(leftPower);
+    climber.setRight(rightPower);
 
-    if(rightY > 0.5){
-
-      climber.setRight(climber.armUpSpeed);
-
-    } else if(rightY < -0.5){
-
-      climber.setRight(climber.armDownSpeed);
-
-    } else{
-
-      climber.stopRight();
-
-    }
-
+    climberData.updateEntry("Setpoint", setpoint);
+    climberData.updateEntry("Left Pos", climber.getLeftDistance());
+    climberData.updateEntry("Right Pos", climber.getRightDistance());
   }
 
   // Called once the command ends or is interrupted.

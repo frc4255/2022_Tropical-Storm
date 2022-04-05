@@ -12,5 +12,6 @@ public class Shuphlebord {
     public static TabData intakeData = new TabData("Intake");
     public static TabData conveyorData = new TabData("Conveyor");
     public static TabData limelightData = new TabData("Limelight Info");
+    public static TabData climberData = new TabData("Climber");
 
 }
