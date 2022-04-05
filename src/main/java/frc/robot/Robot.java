@@ -80,8 +80,8 @@ public class Robot extends TimedRobot {
   public static class FiveBallAuto{
 
     // PATH CHARACTERISTICS
-    static double maxAccel = 3.0;
-    static double maxVel = 5.0;
+    static double maxAccel = 4.0;
+    static double maxVel = 5.25;
 
     // 5 BALL PATHS
     /*static String ball1Dir = "output/Ball1_FIVE_BALL.wpilib.json";
@@ -102,6 +102,9 @@ public class Robot extends TimedRobot {
     public static Trajectory ball1and2Trajectory = new Trajectory();
     public static Trajectory ball3Trajectory = new Trajectory();
     public static Trajectory ball4and5Trajectory = new Trajectory();
+
+    public static Trajectory altBall2and3Trajectory = new Trajectory();
+    public static Trajectory altBall4and5Trajectory = new Trajectory();
 
   }
 
@@ -147,6 +150,8 @@ public class Robot extends TimedRobot {
     FiveBallAuto.ball1and2Trajectory = PathPlanner.loadPath("5_Ball_2-1-2_Ball_1-2", FiveBallAuto.maxVel, FiveBallAuto.maxAccel);
     FiveBallAuto.ball3Trajectory = PathPlanner.loadPath("5_Ball_2-1-2_Ball_3", FiveBallAuto.maxVel, FiveBallAuto.maxAccel);
     FiveBallAuto.ball4and5Trajectory = PathPlanner.loadPath("5_Ball_2-1-2_Ball_4-5", FiveBallAuto.maxVel, FiveBallAuto.maxAccel);
+    FiveBallAuto.altBall2and3Trajectory = PathPlanner.loadPath("5_Ball_1-2-2_Ball_2-3", FiveBallAuto.maxVel, FiveBallAuto.maxAccel);
+    FiveBallAuto.altBall4and5Trajectory = PathPlanner.loadPath("5_Ball_1-2-2_Ball_4-5", FiveBallAuto.maxVel, FiveBallAuto.maxAccel);
 
     m_robotContainer = new RobotContainer();
     LiveWindow.disableAllTelemetry();

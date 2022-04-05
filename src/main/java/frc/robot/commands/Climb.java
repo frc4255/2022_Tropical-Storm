@@ -4,8 +4,8 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.RobotContainer;
 import frc.robot.subsystems.Climber;
 
 public class Climb extends CommandBase {
@@ -13,15 +13,13 @@ public class Climb extends CommandBase {
 
   Climber climber;
 
-  Timer stopperTimer = new Timer();
-  double stopDelay = 0.25;
+  double scaler = 5.0 / 7.0;
 
   /** Creates a new Climb. */
   public Climb(Climber m_climber) {
     addRequirements(m_climber);
 
-    this.climber = m_climber;
-    // Use addRequirements() here to declare subsystem dependencies.
+    climber = m_climber;
   }
 
   // Called when the command is initially scheduled.
@@ -31,44 +29,38 @@ public class Climb extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    /*
-    if (Climber.State == Climber.STATES.STOP) {
 
-      climber.stop();
-      climber.hold();
-      stopperTimer.reset();
+    double leftY = RobotContainer.mechController.getLeftY();
+    double rightY = -RobotContainer.mechController.getRightY();
+  
+    if(leftY > 0.5){
 
-    } else if (Climber.State == Climber.STATES.ARMUP) {
+      climber.setLeft(climber.armUpSpeed);
 
-      if(stopperTimer.get() > stopDelay){
+    } else if(leftY < -0.5){
 
-        climber.set(climber.armUpSpeed);
+      climber.setLeft(climber.armDownSpeed);
 
-      } else{
+    } else{
 
-        climber.release();
-        stopperTimer.start();
-        
-      }
+      climber.stopLeft();
 
-    } else if (Climber.State == Climber.STATES.ARMDOWN) {
+    }
 
-      if(stopperTimer.get() > stopDelay){
+    if(rightY > 0.5){
 
-        climber.set(climber.armDownSpeed);
+      climber.setRight(climber.armUpSpeed);
 
-      } else{
+    } else if(rightY < -0.5){
 
-        climber.release();
-        stopperTimer.start();
-        
-      }
+      climber.setRight(climber.armDownSpeed);
 
-    } else if(Climber.State == Climber.STATES.RELEASE){
+    } else{
 
-      climber.release();
+      climber.stopRight();
 
-    }*/
+    }
+
   }
 
   // Called once the command ends or is interrupted.

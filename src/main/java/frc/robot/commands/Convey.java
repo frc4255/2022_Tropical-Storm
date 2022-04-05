@@ -12,6 +12,7 @@ import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.MechManager;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Conveyor.SUBSTATES;
+import frc.robot.subsystems.MechManager.AUTO_STATES;
 
 public class Convey extends CommandBase {
   @SuppressWarnings({ "PMD.UnusedPrivateField", "PMD.SingularField" })
@@ -129,7 +130,7 @@ public class Convey extends CommandBase {
       }
     } else if(Conveyor.State == Conveyor.STATES.FEED){
 
-      if(MechManager.State == MechManager.AUTO_STATES.VISION_SHOOT){
+      if(MechManager.State == MechManager.AUTO_STATES.VISION_SHOOT || MechManager.State == AUTO_STATES.SHORT_VISION_SHOOT){
         conveyor.set(conveyor.liftSpeed * 3.1);
       } else{
         conveyor.set(conveyor.liftSpeed);

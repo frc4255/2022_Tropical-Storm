@@ -20,6 +20,7 @@ public class AutoMechManager extends CommandBase {
   Timer fenderShootTimer = new Timer();
   
   double visionShootLimit = 1.8;
+  double shortVisionShootLimit = 0.8;
   Timer visionShootTimer = new Timer();
 
   double autoIntakeLimit = 0.25;
@@ -69,17 +70,35 @@ public class AutoMechManager extends CommandBase {
       MechManager.State = MechManager.AUTO_STATES.NONE;
       Shooter.State = Shooter.STATES.IDLE;
       Conveyor.State = Conveyor.STATES.INDEX;
-      Hopper.State = Hopper.STATES.STOP;
       visionShootTimer.reset();
       Limelight.ALIGNED = false;
-      System.out.println("Aligned is being set to false in AutoMechManager!");
       finished = true;
 
     } else if(MechManager.State == MechManager.AUTO_STATES.VISION_SHOOT){
 
       Limelight.ALIGNED = true;
       visionShootTimer.start();
-      System.out.println("Auto Ran for some Reason!");
+      Intake.State = Intake.STATES.STOP;
+      Shooter.State = Shooter.STATES.VISION_SHOOT;
+      Hopper.State = Hopper.STATES.FUNNEL;
+      finished = false;
+
+    }
+
+    if(MechManager.State == MechManager.AUTO_STATES.SHORT_VISION_SHOOT && visionShootTimer.get() > shortVisionShootLimit){
+
+      MechManager.State = MechManager.AUTO_STATES.NONE;
+      Shooter.State = Shooter.STATES.IDLE;
+      Conveyor.State = Conveyor.STATES.INDEX;
+      visionShootTimer.reset();
+      Limelight.ALIGNED = false;
+      finished = true;
+
+    } else if(MechManager.State == MechManager.AUTO_STATES.SHORT_VISION_SHOOT){
+
+      Limelight.ALIGNED = true;
+      visionShootTimer.start();
+      Intake.State = Intake.STATES.STOP;
       Shooter.State = Shooter.STATES.VISION_SHOOT;
       Hopper.State = Hopper.STATES.FUNNEL;
       finished = false;

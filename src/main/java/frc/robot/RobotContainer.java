@@ -68,12 +68,7 @@ public class RobotContainer {
   public static final int alignButtonValue = Button.kY.value;
   public final JoystickButton alignButton = new JoystickButton(driveController, alignButtonValue);
 
-  public final JoystickButton hopperIntakeButton = new JoystickButton(mechController, Button.kX.value);
-  public final JoystickButton liftButton = new JoystickButton(mechController, Button.kY.value);
-  public final JoystickButton lowerButton = new JoystickButton(mechController, Button.kA.value);
-  public final JoystickButton armUpButton = new JoystickButton(mechController, Button.kRightBumper.value);
-  public final JoystickButton armDownButton = new JoystickButton(mechController, Button.kLeftBumper.value);
-  public final JoystickButton releaseStopperButton = new JoystickButton(mechController, Button.kB.value);
+  public final JoystickButton hopperIntakeButton = new JoystickButton(mechController, Button.kA.value);
 
   // AUTO CHOOSER
 
@@ -98,11 +93,13 @@ public class RobotContainer {
     // AUTO STUFF
     String fourB = "fourBall";
     String fiveB = "fiveBall";
+    String altFiveB = "altFiveBall";
     String tB = "twoBall";
     String nB = "noBall";
 
     autoChooser = new SendableChooser<>();
     autoChooser.setDefaultOption("5 Ball", fiveB);
+    autoChooser.addOption("Alt 5 Ball", altFiveB);
     autoChooser.addOption("4 Ball", fourB);
     autoChooser.addOption("2 Ball", tB);
     autoChooser.addOption("Do Nothing", nB);
@@ -134,15 +131,6 @@ public class RobotContainer {
 
     hopperIntakeButton.whileHeld(() -> Hopper.State = Hopper.STATES.FUNNEL);
     hopperIntakeButton.whenReleased(() -> Hopper.State = Hopper.STATES.STOP);
-
-    armUpButton.whileHeld(() -> Climber.State = Climber.STATES.ARMUP);
-    armUpButton.whenReleased(() -> Climber.State = Climber.STATES.STOP);
-
-    armDownButton.whileHeld(() -> Climber.State = Climber.STATES.ARMDOWN);
-    armDownButton.whenReleased(() -> Climber.State = Climber.STATES.STOP);
-
-    releaseStopperButton.whileHeld(() -> Climber.State = Climber.STATES.RELEASE);
-    releaseStopperButton.whenReleased(() -> Climber.State = Climber.STATES.STOP);
   }
 
   private RamseteCommand getRamseteCommand(Trajectory trajectory){
@@ -191,6 +179,8 @@ public class RobotContainer {
     RamseteCommand ball1and2_FIVE_BALL = getRamseteCommand(FiveBallAuto.ball1and2Trajectory);
     RamseteCommand ball3_FIVE_BALL = getRamseteCommand(FiveBallAuto.ball3Trajectory);
     RamseteCommand ball4and5_FIVE_BALL = getRamseteCommand(FiveBallAuto.ball4and5Trajectory);
+    RamseteCommand altBall2and3_FIVE_BALL = getRamseteCommand(FiveBallAuto.altBall2and3Trajectory);
+    RamseteCommand altBall4and5_FIVE_BALL = getRamseteCommand(FiveBallAuto.altBall4and5Trajectory);
 
 
     // COMMANDS
@@ -236,12 +226,25 @@ public class RobotContainer {
                        new AutoMechManager(AUTO_STATES.VISION_SHOOT)).andThen(
                        new AutoMechManager(AUTO_STATES.ENABLE_INTAKE)).andThen(
                        ball3_FIVE_BALL).andThen(
-                       new AutoMechManager(AUTO_STATES.VISION_SHOOT)).andThen(
+                       new AutoMechManager(AUTO_STATES.SHORT_VISION_SHOOT)).andThen(
                        new AutoMechManager(AUTO_STATES.ENABLE_INTAKE)).andThen(
                        ball4and5_FIVE_BALL).andThen(
                        new AutoMechManager(AUTO_STATES.VISION_SHOOT)).andThen(
                        new AutoMechManager(AUTO_STATES.DISABLE_INTAKE)).andThen(
                        new AutoMechManager(AUTO_STATES.STOP_SHOOT));
+
+    Command alternateFiveBall = new AutoMechManager(AUTO_STATES.SHORT_VISION_SHOOT).andThen(
+                                new AutoMechManager(AUTO_STATES.ENABLE_INTAKE)).andThen(
+                                new InstantCommand(() -> Shooter.State = Shooter.STATES.IDLE)).andThen(
+                                altBall2and3_FIVE_BALL).andThen(
+                                new AutoMechManager(AUTO_STATES.VISION_SHOOT)).andThen(
+                                new AutoMechManager(AUTO_STATES.ENABLE_INTAKE)).andThen(
+                                altBall4and5_FIVE_BALL).andThen(
+                                new AutoMechManager(AUTO_STATES.VISION_SHOOT)).andThen(
+                                new AutoMechManager(AUTO_STATES.DISABLE_INTAKE)).andThen(
+                                new AutoMechManager(AUTO_STATES.STOP_SHOOT));
+
+                                
 
 
     // GET SELECTED AUTO
@@ -284,6 +287,14 @@ public class RobotContainer {
       m_drivetrain.resetOdometry(FiveBallAuto.ball1and2Trajectory.getInitialPose());
 
       return fiveBall;
+    } else if(choice == "altFiveBall"){
+
+      // ALT 5 BALL
+
+      // Reset odometry to the starting pose of the trajectory.
+      m_drivetrain.resetOdometry(FiveBallAuto.altBall2and3Trajectory.getInitialPose());
+
+      return alternateFiveBall;
     } else{
 
       // 4 BALL, AS FALL BACK OPTION

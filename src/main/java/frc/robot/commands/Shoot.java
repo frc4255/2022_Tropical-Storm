@@ -141,7 +141,9 @@ public class Shoot extends CommandBase {
       } else if(Math.abs(shooter.getRPM() - tarRPM) <= tolerance){
         toleranceTimer.start();
       }else{
-        if(MechManager.State != MechManager.AUTO_STATES.VISION_SHOOT && Conveyor.State != Conveyor.STATES.FEED){
+        if(MechManager.State != AUTO_STATES.VISION_SHOOT && MechManager.State != AUTO_STATES.SHORT_VISION_SHOOT){
+          Conveyor.State = Conveyor.STATES.STOP;
+        } else if(Conveyor.State != Conveyor.STATES.FEED){
           Conveyor.State = Conveyor.STATES.STOP;
         }
         toleranceTimer.reset();

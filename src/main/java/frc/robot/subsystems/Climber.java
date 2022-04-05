@@ -6,57 +6,46 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
-import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 
 public class Climber extends SubsystemBase {
   /** Creates a new Climber. */
-  public static enum STATES {ARMUP, ARMDOWN, STOP, RELEASE};
-  
-  public static STATES State = STATES.STOP;
 
-  public WPI_TalonFX motor;
-  public double armUpSpeed = -0.8;
-  public double armDownSpeed = 0.8;
+  public WPI_TalonFX leftMotor;
+  public WPI_TalonFX rightMotor;
+  public double armUpSpeed = -0.4;
+  public double armDownSpeed = 0.4;
 
   public double max = 142502.0;
   public double min = 0.0;
 
-  public Solenoid stopper;
   boolean holding = false;
   
-  public Climber() {/*
-    motor = new WPI_TalonFX(Constants.Climber.motor);
+  public Climber() {
+    leftMotor = new WPI_TalonFX(Constants.Climber.leftMotor);
+    rightMotor = new WPI_TalonFX(Constants.Climber.rightMotor);
 
-    motor.setNeutralMode(NeutralMode.Brake);
-
-    stopper = new Solenoid(PneumaticsModuleType.REVPH, Constants.Climber.stopper);*/
+    leftMotor.setNeutralMode(NeutralMode.Brake);
+    rightMotor.setNeutralMode(NeutralMode.Brake);
   }
-  /*
-
-  public void set(double power) {
-    motor.set(power);
-  }
-
-  public void stop() {
-    set(0.0);
+  
+  public void setLeft(double power) {
+    leftMotor.set(power);
   }
 
-  public void hold(){
-    stopper.set(holding);
+  public void setRight(double power){
+    rightMotor.set(power);
   }
 
-  public void release(){
-    stopper.set(!holding);
+  public void stopLeft() {
+    setLeft(0.0);
   }
 
-  public double readEncoder(){
-    return motor.getSelectedSensorPosition();
+  public void stopRight(){
+    setRight(0.0);
   }
-
-  public void resetEncoder(){
-    motor.setSelectedSensorPosition(0.0);
-  }*/
 
   @Override
   public void periodic() {

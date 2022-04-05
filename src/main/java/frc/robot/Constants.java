@@ -67,7 +67,8 @@ public final class Constants {
 
     public static final class Climber {
         
-        public static final int motor = 12;
+        public static final int leftMotor = 13;
+        public static final int rightMotor = 12;
 
         public static final int stopper = 1;
 
