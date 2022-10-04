@@ -18,7 +18,7 @@ public class Hopper extends SubsystemBase {
   WPI_TalonFX leftMotor;
   WPI_TalonFX rightMotor;
 
-  public double funnelSpeed = 0.6;
+  public double funnelSpeed = 0.3;
   public double expelSpeed = -0.6;
 
 

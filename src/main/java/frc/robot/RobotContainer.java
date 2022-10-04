@@ -7,6 +7,7 @@ package frc.robot;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
@@ -97,6 +98,7 @@ public class RobotContainer {
     String fiveB = "fiveBall";
     String altFiveB = "altFiveBall";
     String tB = "twoBall";
+    String trollTB = "trollTwoBall";
     String nB = "noBall";
 
     autoChooser = new SendableChooser<>();
@@ -104,6 +106,7 @@ public class RobotContainer {
     autoChooser.addOption("Alt 5 Ball", altFiveB);
     autoChooser.addOption("4 Ball", fourB);
     autoChooser.addOption("2 Ball", tB);
+    autoChooser.addOption("Troll 2 Ball", trollTB);
     autoChooser.addOption("Do Nothing", nB);
 
     SmartDashboard.putData(autoChooser);
@@ -170,6 +173,10 @@ public class RobotContainer {
     RamseteCommand ball1_TWO_BALL = getRamseteCommand(TwoBallAuto.ball1Trajectory);
     RamseteCommand shoot1_TWO_BALL = getRamseteCommand(TwoBallAuto.shoot1Trajectory);
 
+    // 2 BALL TROLL PATHS
+    RamseteCommand ball1and2_TWO_BALL = getRamseteCommand(TwoBallAuto.ball1and2Trajectory);
+    RamseteCommand trollSTurn_TWO_BALL = getRamseteCommand(TwoBallAuto.trollSTurnTrajectory);
+
     // 5 BALL PATHS
     /*RamseteCommand ball1_FIVE_BALL = getRamseteCommand(FiveBallAuto.ball1Trajectory);
     RamseteCommand shoot1_FIVE_BALL = getRamseteCommand(FiveBallAuto.shoot1Trajectory);
@@ -205,22 +212,11 @@ public class RobotContainer {
                       new AutoMechManager(AUTO_STATES.DISABLE_INTAKE)).andThen(
                       new AutoMechManager(AUTO_STATES.FENDER_SHOOT));
 
-    /*Command fiveBall = new AutoMechManager(AUTO_STATES.ENABLE_INTAKE).andThen(
-                       ball1_FIVE_BALL).andThen(
-                       new InstantCommand(() -> Shooter.State = Shooter.STATES.IDLE)).andThen(
-                       shoot1_FIVE_BALL).andThen(
-                       new AutoMechManager(AUTO_STATES.VISION_SHOOT)).andThen(
-                       new AutoMechManager(AUTO_STATES.ENABLE_INTAKE)).andThen(
-                       ball2_FIVE_BALL).andThen(
-                       shoot2_FIVE_BALL).andThen(
-                       new AutoMechManager(AUTO_STATES.VISION_SHOOT)).andThen(
-                       new AutoMechManager(AUTO_STATES.ENABLE_INTAKE)).andThen(
-                       ball3and4_FIVE_BALL).andThen(
-                       new AutoMechManager(AUTO_STATES.INTAKE)).andThen(
-                       shoot3_FIVE_BALL).andThen(
-                       new AutoMechManager(AUTO_STATES.VISION_SHOOT)).andThen(
-                       new AutoMechManager(AUTO_STATES.DISABLE_INTAKE)).andThen(
-                       new AutoMechManager(AUTO_STATES.STOP_SHOOT));*/
+    Command trollTwoBall = new AutoMechManager(AUTO_STATES.ENABLE_INTAKE).andThen(
+                           ball1and2_TWO_BALL).andThen(
+                           new AutoMechManager(AUTO_STATES.DISABLE_INTAKE)).andThen(
+                           new AutoMechManager(AUTO_STATES.FENDER_SHOOT)).andThen(
+                           trollSTurn_TWO_BALL);
     
     Command fiveBall = new AutoMechManager(AUTO_STATES.ENABLE_INTAKE).andThen(
                        new InstantCommand(() -> Shooter.State = Shooter.STATES.IDLE)).andThen(
@@ -275,9 +271,25 @@ public class RobotContainer {
       m_drivetrain.resetOdometry(TwoBallAuto.ball1Trajectory.getInitialPose());
 
       return twoBall;
+    } else if(choice == "trollTwoBall"){
+
+      // TROLL 2 BALL
+
+      // Reset odometry to the starting pose of the trajectory.
+      m_drivetrain.resetOdometry(TwoBallAuto.ball1and2Trajectory.getInitialPose());
+
+      return trollTwoBall;
     } else if(choice == "noBall"){
 
       // DON'T MOVE
+
+
+      // Reset odometry to the starting pose of the trajectory.
+      Pose2d zero = new Pose2d();
+
+      m_drivetrain.resetOdometry(zero);
+      
+      System.out.println("Should have reset pose!");
 
       return new InstantCommand();
 

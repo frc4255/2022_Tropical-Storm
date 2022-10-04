@@ -26,16 +26,16 @@ public class Shoot extends CommandBase {
   TabData shooterData = Shuphlebord.shooterData;
   double setpoint = Shooter.shootSetpoint;
 
-  double kp = 0.28117;
+  double kp = 0.14;
   double ki = 0.0;
   double kd = 0.0;
   double power = 0.0;
   double tolerance = 50.0;
   PIDController controller = new PIDController(kp, ki, kd);
 
-  double ks = 0.84619;
-  double kv = 0.12756;
-  double ka = 0.0096118;
+  double ks = 0.78094;
+  double kv = 0.11951;
+  double ka = 0.015867;
   SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(ks, kv, ka);
 
   Timer toleranceTimer = new Timer();
@@ -67,6 +67,7 @@ public class Shoot extends CommandBase {
 
     setpoint = Shooter.shootSetpoint;
     
+    /*
     double adjustedkp = shooterData.getEntryData("kP").getDouble();
     double adjustedki = shooterData.getEntryData("kI").getDouble();
     double adjustedkd = shooterData.getEntryData("kD").getDouble();
@@ -79,7 +80,7 @@ public class Shoot extends CommandBase {
 
       controller.setPID(kp, ki, kd);
       Shooter.shootSetpoint = adjustedSetpoint;
-    }
+    }*/
 
     boolean buttonPressed = RobotContainer.driveController.getRawButton(RobotContainer.alignButtonValue);
 
@@ -103,7 +104,7 @@ public class Shoot extends CommandBase {
 
       shooter.setVoltage(power);
 
-      if(Math.abs(shooter.getRPM() - Shooter.shootSetpoint) <= tolerance && toleranceTimer.get() > 0.1){
+      if(Math.abs(shooter.getRPM() - Shooter.shootSetpoint) <= tolerance && toleranceTimer.get() > 0.2){
         Conveyor.State = Conveyor.STATES.FEED;
         Hopper.State = Hopper.STATES.FUNNEL;
       } else if(Math.abs(shooter.getRPM() - Shooter.shootSetpoint) <= tolerance){
@@ -132,8 +133,6 @@ public class Shoot extends CommandBase {
       shooterData.updateEntry("Error", tarRPM - rps * 60.0);
 
       shooter.setVoltage(power);
-
-      System.out.println("ALIGNED?: " + Limelight.ALIGNED);
 
       if(Math.abs(shooter.getRPM() - tarRPM) <= tolerance && toleranceTimer.get() > 0.1 && Limelight.ALIGNED){
         Conveyor.State = Conveyor.STATES.FEED;
@@ -189,8 +188,6 @@ public class Shoot extends CommandBase {
       lastPressed = false;
       controller.reset();
     }
-
-    System.out.println("Shooter State: " + Shooter.State.toString());
 
   }
 

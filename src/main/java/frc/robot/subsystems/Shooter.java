@@ -28,7 +28,7 @@ public class Shooter extends SubsystemBase {
   TalonFXEncoder leftEncoder;
   TalonFXEncoder rightEncoder;
 
-  public static double shootSetpoint = 1700.0;
+  public static double shootSetpoint = 1650.0;
   public static double idleSetpoint = 2150.0;
   public static double expelSetpoint = 600.0;
 
@@ -87,7 +87,7 @@ public class Shooter extends SubsystemBase {
 
     // Should be put as rpms.put(Distance in inches, rpm)
     // This is the data table for the distance v. rpm data
-    rpms.put(29.0, 1700.0);
+    rpms.put(29.0, 1800.0);
     rpms.put(51.0, 1830.0);
     rpms.put(75.0, 1980.0);
     rpms.put(100.0, 2150.0);

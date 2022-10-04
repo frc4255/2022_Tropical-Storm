@@ -122,7 +122,9 @@ public class Drivetrain extends SubsystemBase {
    */
   public void resetOdometry(Pose2d pose) {
     resetEncoders();
+    System.out.println("Left Encoder Reading: " + m_leftEncoder.getDistance() + ", Right Encoder Reading: " + m_rightEncoder.getDistance());
     m_odometry.resetPosition(pose, m_gyro.getRotation2d());
+    System.out.println("Angle: " + getPose().getRotation().getDegrees());
   }
 
   /**
@@ -228,6 +230,7 @@ public class Drivetrain extends SubsystemBase {
    */
   public TalonFXEncoder getRightEncoder() {
     return m_rightEncoder;
+    
   }
 
   /**

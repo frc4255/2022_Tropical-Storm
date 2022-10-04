@@ -4,8 +4,6 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 import frc.robot.Shuphlebord;
@@ -19,24 +17,10 @@ public class Climb extends CommandBase {
 
   TabData climberData = Shuphlebord.climberData;
 
-  double scaler = 5.0 / 7.0;
+  double threshold = 0.5;
 
-  double maxVelocity = 1.0;
-  double maxAcceleration = 1.0;
-  Constraints constraints = new Constraints(maxVelocity, maxAcceleration);
-
-  double setpoint = 0.0;
-  double step = 0.01;
-
-  double leftKP = 0.0;
-  double leftKI = 0.0;
-  double leftKD = 0.0;
-  ProfiledPIDController leftController = new ProfiledPIDController(leftKP, leftKI, leftKD, constraints);
-
-  double rightKP = 0.0;
-  double rightKI = 0.0;
-  double rightKD = 0.0;
-  ProfiledPIDController rightController = new ProfiledPIDController(rightKP, rightKI, rightKD, constraints);
+  boolean leftOverextended = false;
+  boolean rightOverextended = false;
 
   /** Creates a new Climb. */
   public Climb(Climber m_climber) {
@@ -49,39 +33,95 @@ public class Climb extends CommandBase {
   @Override
   public void initialize() {
 
-    leftController.setGoal(setpoint);
-    rightController.setGoal(setpoint);
-
-    climberData.updateEntry("Setpoint", setpoint);
-
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
 
-    double joystickValue = RobotContainer.mechController.getLeftY();
-  
-    if(joystickValue > 0.5){
+    double leftY  = -RobotContainer.mechController.getRightY();
+    double rightY = -RobotContainer.mechController.getLeftY();
+    double leftP = -climber.getLeftPower();
+    double rightP = -climber.getRightPower();
+    boolean extend = RobotContainer.mechController.getRightBumper();
+    boolean retract = RobotContainer.mechController.getLeftBumper();
 
-      setpoint += step;
-      
+    // CHECK FOR OVER-EXTENSION
+    if(climber.atLeftLimit() && leftP > 0.0){
+      leftOverextended = true;
+      climber.stopLeft();
+    } else if(climber.atLeftLimit() && leftP < 0.0){
+      leftOverextended = false;
+    }
 
-    } else if(joystickValue < -0.5){
+    if(climber.atRightLimit() && rightP > 0.0){
+      rightOverextended = true;
+      climber.stopRight();
+    } else if(climber.atRightLimit() && rightP < 0.0){
+      rightOverextended = false;
+    }
 
-      setpoint -= step;
 
-    } 
+    // MANAGE CLIMBER SPEED
+    if(leftOverextended) {
 
-    double leftPower = leftController.calculate(climber.getLeftDistance());
-    double rightPower = rightController.calculate(climber.getRightDistance());
+      if (leftY < -threshold) {
 
-    climber.setLeft(leftPower);
-    climber.setRight(rightPower);
+        climber.setLeft(climber.armDownSpeed);
 
-    climberData.updateEntry("Setpoint", setpoint);
-    climberData.updateEntry("Left Pos", climber.getLeftDistance());
-    climberData.updateEntry("Right Pos", climber.getRightDistance());
+      } else if (leftY > threshold) {
+
+        climber.stopLeft();
+
+      } else {
+
+        climber.stopLeft();
+
+      }
+
+    } else{
+      if(leftY < -threshold){
+        climber.setLeft(climber.armDownSpeed);
+      } else if(leftY > threshold){
+        climber.setLeft(climber.armUpSpeed);
+      } else{
+        climber.stopLeft();
+      }
+    }
+
+    if(rightOverextended){
+      if(rightY < -threshold){
+        climber.setRight(climber.armDownSpeed);
+      } else if(rightY > threshold){
+        climber.stopRight();
+      } else{
+        climber.stopRight();
+      }
+    } else{
+      if(rightY < -threshold){
+        climber.setRight(climber.armDownSpeed);
+      } else if(rightY > threshold){
+        climber.setRight(climber.armUpSpeed);
+      } else{
+        climber.stopRight();
+      }
+    }
+
+
+    // PNEUMATIC ARM MOVEMENT
+    if(extend){
+      climber.extendArm();
+    } else if(retract){
+      climber.retractArm();
+    }
+
+    climberData.updateEntry("Left Y", leftY);
+    climberData.updateEntry("Right Y", rightY);
+    climberData.updateEntry("Left Power", leftP);
+    climberData.updateEntry("Right Power", rightP);
+    climberData.updateEntry("Left Overextended", leftOverextended);
+    climberData.updateEntry("Right Overextended", rightOverextended);
+    
   }
 
   // Called once the command ends or is interrupted.

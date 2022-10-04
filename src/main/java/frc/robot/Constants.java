@@ -18,7 +18,7 @@ public final class Constants {
 
     // ALLIANCE CHOOSER
     // 0 for red, 1 for blue
-    public static int allianceColor = 1;
+    public static int allianceColor = 0;
 
 
     // MECHANISM CONSTANTS
@@ -70,7 +70,7 @@ public final class Constants {
         public static final int leftMotor = 13;
         public static final int rightMotor = 12;
 
-        public static final int stopper = 1;
+        public static final int arm = 1;
 
     }
 

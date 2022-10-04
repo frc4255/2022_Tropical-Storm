@@ -19,11 +19,13 @@ public class Convey extends CommandBase {
 
   Conveyor conveyor;
 
+  Conveyor.SUBSTATES prevState = Conveyor.Substate;
+
   Timer LOAD_TIMER = new Timer();
   Timer VOMIT_TIMER = new Timer();
   Timer MISFIRE_TIMER = new Timer();
 
-  double LOAD_TIME = 0.25;
+  double LOAD_TIME = 0.35;
   double VOMIT_TIME = 0.8;
   double MISFIRE_TIME = 0.5;
 
@@ -46,6 +48,8 @@ public class Convey extends CommandBase {
     boolean CB = Conveyor.hasCorrectBall() == 0;
     boolean WB = Conveyor.hasCorrectBall() == 1;
   
+    System.out.println(Conveyor.Substate);
+
     if(Conveyor.State == Conveyor.STATES.STOP){
       conveyor.stop();
 
@@ -120,7 +124,7 @@ public class Convey extends CommandBase {
         } else if(CB){
           conveyor.set(0.0);
         } else{
-          conveyor.set(conveyor.lowerSpeed);
+          conveyor.set(0.0 * conveyor.lowerSpeed);
           Hopper.State = Hopper.STATES.EXPEL;
           Intake.State = Intake.STATES.EXPEL;
           Conveyor.ballsInConveyor = 1;
@@ -131,7 +135,7 @@ public class Convey extends CommandBase {
     } else if(Conveyor.State == Conveyor.STATES.FEED){
 
       if(MechManager.State == MechManager.AUTO_STATES.VISION_SHOOT || MechManager.State == AUTO_STATES.SHORT_VISION_SHOOT){
-        conveyor.set(conveyor.liftSpeed * 3.1);
+        conveyor.set(conveyor.liftSpeed * 1.8);
       } else{
         conveyor.set(conveyor.liftSpeed);
       }
@@ -146,6 +150,11 @@ public class Convey extends CommandBase {
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     conveyor.displayConveyorValues();
+
+    if(prevState != Conveyor.Substate){
+      System.out.println("State: " + Conveyor.Substate);
+      prevState = Conveyor.Substate;
+    }
   }
 
   // Called once the command ends or is interrupted.

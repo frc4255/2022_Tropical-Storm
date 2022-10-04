@@ -6,12 +6,14 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.wrappers.TalonFXEncoder;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 
 public class Climber extends SubsystemBase {
   /** Creates a new Climber. */
@@ -22,8 +24,13 @@ public class Climber extends SubsystemBase {
   public TalonFXEncoder leftEncoder;
   public TalonFXEncoder rightEncoder;
 
-  public double armUpSpeed = -0.4;
-  public double armDownSpeed = 0.4;
+  public DigitalInput leftLimitSensor;
+  public DigitalInput rightLimitSensor;
+
+  Solenoid arm;
+
+  public double armUpSpeed = -0.8;
+  public double armDownSpeed = 0.8;
 
   public double max = 142502.0;
   public double min = 0.0;
@@ -34,8 +41,6 @@ public class Climber extends SubsystemBase {
     leftMotor = new WPI_TalonFX(Constants.Climber.leftMotor);
     rightMotor = new WPI_TalonFX(Constants.Climber.rightMotor);
 
-    rightMotor.setInverted(TalonFXInvertType.Clockwise);
-
     leftMotor.setNeutralMode(NeutralMode.Brake);
     rightMotor.setNeutralMode(NeutralMode.Brake);
 
@@ -44,7 +49,7 @@ public class Climber extends SubsystemBase {
 
     // Set distance per rotation of the motor here
     // factor should initially be set to meters / rotation
-    double factor = 1.0;
+    double factor = (Math.PI / ((54.0 / 8.0) * (48.0 / 24.0))) * 0.0254;
     factor /= 2048.0;
 
     leftEncoder.setDistancePerPulse(factor);
@@ -52,6 +57,11 @@ public class Climber extends SubsystemBase {
 
     leftEncoder.reset();
     rightEncoder.reset();
+
+    leftLimitSensor = new DigitalInput(0);
+    rightLimitSensor = new DigitalInput(1);
+
+    arm = new Solenoid(PneumaticsModuleType.REVPH, Constants.Climber.arm);
   }
   
   public void setLeft(double power) {
@@ -59,7 +69,7 @@ public class Climber extends SubsystemBase {
   }
 
   public void setRight(double power){
-    rightMotor.set(power);
+    rightMotor.set(power*0.9);
   }
 
   public void stopLeft() {
@@ -68,6 +78,30 @@ public class Climber extends SubsystemBase {
 
   public void stopRight(){
     setRight(0.0);
+  }
+
+  public void setLeftVoltage(double power){
+    leftMotor.setVoltage(power);
+  }
+
+  public void setRightVoltage(double power){
+    rightMotor.setVoltage(power);
+  }
+
+  public double getLeftPower(){
+    return leftMotor.get();
+  }
+
+  public double getRightPower(){
+    return rightMotor.get();
+  }
+
+  public void extendArm(){
+    arm.set(true);
+  }
+
+  public void retractArm(){
+    arm.set(false);
   }
 
   /**
@@ -84,8 +118,18 @@ public class Climber extends SubsystemBase {
    */
   public double getRightDistance(){
 
-    return -rightEncoder.getDistance();
+    return rightEncoder.getDistance();
 
+  }
+
+  public boolean atLeftLimit(){
+    //return !leftLimitSensor.get();
+    return false;
+  }
+
+  public boolean atRightLimit(){
+    //return !rightLimitSensor.get();
+    return false;
   }
 
   @Override

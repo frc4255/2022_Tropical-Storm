@@ -23,7 +23,7 @@ public class Drive extends CommandBase {
 
   Drivetrain drivetrain;
 
-  SlewRateLimiter filter = new SlewRateLimiter(1.0);
+  SlewRateLimiter filter = new SlewRateLimiter(1.2);
 
   SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(DTProperties.ksVolts, DTProperties.kvVoltSecondsPerMeter,
                                                                   DTProperties.kaVoltSecondsSquaredPerMeter);
@@ -82,6 +82,7 @@ public class Drive extends CommandBase {
       kd = adjustedkd;
 
       controller.setPID(kp, ki, kd);
+
     }
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -96,11 +97,13 @@ public class Drive extends CommandBase {
 
       double filteredY = filter.calculate(controllerY);
 
-      WheelSpeeds speeds = drivetrain.curvatureDriveIK(filteredY, controllerX);
+      drivetrainData.updateEntry("Filtered Y", filteredY);
+
+      WheelSpeeds speeds = drivetrain.curvatureDriveIK(filteredY*0.5, controllerX);
 
       double left = speeds.left;
       double right = speeds.right;
-
+ 
       drivetrainData.updateEntry("Filtered Left", left);
       drivetrainData.updateEntry("Filtered Right", right);
 
@@ -139,6 +142,7 @@ public class Drive extends CommandBase {
         alignedTimer.reset();
       }
     }
+    
   }
 
   // Called once the command ends or is interrupted.

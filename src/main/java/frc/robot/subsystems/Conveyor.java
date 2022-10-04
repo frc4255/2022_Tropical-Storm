@@ -89,8 +89,9 @@ public class Conveyor extends SubsystemBase {
     Color color = colorSensor.getColor();
     int proximity = colorSensor.getProximity();
     int proximityThreshold = 80;
-    double blueThreshold = 0.3;
-    double redThreshold = 0.4;
+    double blueThreshold = 0.01;
+    double redThreshold = 0.01;
+
 
     if(proximity > proximityThreshold){
  
@@ -103,10 +104,15 @@ public class Conveyor extends SubsystemBase {
         code = Constants.allianceColor == 0 ? 1 : 0;
 
       }
+      
 
-      return code;
+      System.out.println("Alliance Code: " + Constants.allianceColor + ", Code: " + code);
+
+      return 0;
 
     }
+    
+    System.out.println("Alliance Code: " + Constants.allianceColor + ", Code: " + 2);
 
     return 2;
   }
